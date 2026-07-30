@@ -1,0 +1,8 @@
+.DS_Store
+
+# TWK Lausanne is licensed — publish only the weights the site uses
+fonts/twk_lausanne/*
+!fonts/twk_lausanne/TWKLausanne-200.woff2
+!fonts/twk_lausanne/TWKLausanne-200.otf
+!fonts/twk_lausanne/TWKLausanne-250.woff2
+!fonts/twk_lausanne/TWKLausanne-250.otf

@@ -1,0 +1,681 @@
+/* ============================================================
+   Ellie's Journey — Home
+   Design source: Figma node 4160:56238
+   ============================================================ */
+
+@font-face {
+  font-family: 'TWK Lausanne';
+  src: url('fonts/twk_lausanne/TWKLausanne-200.woff2') format('woff2'),
+       url('fonts/twk_lausanne/TWKLausanne-200.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TWK Lausanne';
+  src: url('fonts/twk_lausanne/TWKLausanne-250.woff2') format('woff2'),
+       url('fonts/twk_lausanne/TWKLausanne-250.otf') format('opentype');
+  font-weight: 250;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Design tokens (Figma variables) */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-link: #366CD9;
+  --text-success: #008500;
+  --text-inverse: #FFFFFF;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F7F7;
+  --bg-page: #F8F8F8;
+  --bg-disabled: #D6D6D6;
+  --bg-in-progress: #366CD9;
+  --bg-warning-subdued: #FFF4EB;
+  --bg-warning: #B85300;
+  --border-default: #888888;
+  --border-success: #00A200;
+  --icon-success: #00A200;
+  --target-red: #CC0000;
+  --grey-light: #E9E9E9;
+
+  --font-display: 'TWK Lausanne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-ui: 'Helvetica for Target', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  --shadow-medium:
+    0 -1px 6px rgba(0, 0, 0, 0.02),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 3px 5px rgba(0, 0, 0, 0.04),
+    0 4px 6px rgba(0, 0, 0, 0.04);
+}
+
+* { box-sizing: border-box; }
+
+/* The page never physically scrolls — wheel input only switches
+   project views, so the left intro panel stays fixed in place. */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  background: var(--bg-page);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------- Left intro panel ---------------- */
+
+.intro {
+  width: 557px;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+}
+
+.intro-inner {
+  width: 396px;
+  margin-left: 61px;
+  min-height: 100vh;
+  padding: 96px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.intro-top {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sketch-lines {
+  width: 56px;
+  height: 62px;
+  display: block;
+}
+
+.intro-text {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  color: #000;
+  font-family: var(--font-display);
+}
+
+.intro-headline {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 250; /* TWK Lausanne 250 */
+  letter-spacing: 0.28px;
+  line-height: normal;
+}
+
+.intro-bio {
+  margin: 0;
+  max-width: 372px;
+  font-size: 16px;
+  font-weight: 200; /* TWK Lausanne 200 */
+  letter-spacing: 0.16px;
+  line-height: normal;
+}
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 372px;
+}
+
+.project-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: #000;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 200; /* TWK Lausanne 200 */
+  letter-spacing: 0.16px;
+  line-height: normal;
+}
+
+.project-row.dimmed { opacity: 0.3; }
+
+.project-org {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-logo {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.project-logo img { display: block; }
+
+.project-name { width: 113px; white-space: nowrap; }
+.project-desc { white-space: nowrap; }
+
+/* ---------------- Right canvas ---------------- */
+
+.canvas {
+  flex: 1;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Project views stack in the canvas; only one is visible at a time.
+   The left intro panel never animates — transitions are canvas-only.
+   Leaving view slides up (or down when going back) while fading out;
+   entering view slides in from the opposite edge while fading in. */
+.view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0);
+  transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.view.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Slide offsets — applied by the switcher script around a transition */
+.view.offset-up   { transform: translateY(-48px); }
+.view.offset-down { transform: translateY(48px); }
+.view.no-anim     { transition: none; }
+
+.canvas-grid {
+  display: flex;
+  gap: 48px;
+}
+
+.col-a {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.col-b {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.card {
+  background: var(--bg-primary);
+  border-radius: 8px;
+  box-shadow: var(--shadow-medium);
+}
+
+/* Generic list cell: [leading] [center...] [trailing] */
+
+.cell {
+  display: flex;
+  align-items: center;
+  padding: 11px 12px;
+  width: 100%;
+}
+
+.cell-leading {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cell-center {
+  flex: 1;
+  min-width: 1px;
+}
+
+.cell-trailing {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cell-headline-lg {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--text-primary);
+}
+
+.cell-headline {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--text-primary);
+}
+
+.cell-body {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--text-secondary);
+}
+
+/* Layered illustration icons (absolute-positioned Figma exports) */
+
+/* Each layer <img> keeps its natural SVG size and is placed by left/top */
+.icon-stack { position: relative; flex-shrink: 0; }
+.icon-stack img, .icon-stack .layer { position: absolute; display: block; }
+.clip { overflow: hidden; }
+
+/* Stat boxes (Data Row / work-area metrics) */
+
+.stat-row {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 1px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-box.warning {
+  background: var(--bg-warning-subdued);
+  border: 2px solid var(--bg-warning);
+}
+
+.stat-label {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+  color: var(--text-primary);
+}
+
+/* Progress bars */
+
+.progress-track {
+  height: 8px;
+  border-radius: 12px;
+  background: var(--bg-disabled);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 12px;
+  background: var(--icon-success);
+}
+
+/* ---------------- Team card ---------------- */
+
+.team-card { padding: 0; }
+
+.team-member-row .cell-center {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.member-avatar {
+  width: 36px;
+  height: 32px;
+  margin-right: 8px;
+}
+
+.member-avatar img { width: 100%; height: 100%; display: block; }
+
+.chevron-20 {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.chevron-20 img {
+  position: absolute;
+  width: 14.5px;
+  height: 8.43px;
+  left: calc(50% - 7.25px + 1.13px);
+  top: calc(50% - 4.22px);
+  transform: rotate(90deg);
+}
+
+/* ---------------- To-do card ---------------- */
+
+.todo-row { padding: 6px 12px; }
+
+.todo-row .cell-leading { padding-right: 12px; }
+
+.todo-headline {
+  margin: 0;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--text-primary);
+}
+
+.todo-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: normal;
+  color: var(--text-primary);
+}
+
+.todo-caption {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: normal;
+  color: var(--text-secondary);
+}
+
+.see-all {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-link);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.chevron-24 {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.chevron-24 img {
+  position: absolute;
+  left: 7.91px;
+  top: 3.47px;
+}
+
+/* ---------------- Team member (Ellie) card ---------------- */
+
+.tm-header { padding: 11px 12px; }
+
+.tm-avatar {
+  width: 42px;
+  height: 42px;
+  margin: 0 9px 0 4px;
+}
+
+.tm-avatar img { width: 100%; height: 100%; display: block; }
+
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: var(--bg-in-progress);
+}
+
+.tag-label {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  white-space: nowrap;
+}
+
+.stepper {
+  width: 336px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stepper-steps {
+  display: flex;
+  gap: 4px;
+}
+
+.step {
+  flex: 1;
+  min-width: 1px;
+  height: 8px;
+  border-radius: 12px;
+  background: var(--bg-disabled);
+  position: relative;
+  overflow: hidden;
+}
+
+.step .step-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  border-radius: 12px;
+  background: var(--icon-success);
+}
+
+.stepper-label {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+/* ---------------- Create task card ---------------- */
+
+.create-card { overflow: hidden; }
+
+.create-header { padding: 11px 12px; border-bottom: 1px solid var(--grey-light); }
+
+.create-header .cell-headline-md {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--text-primary);
+}
+
+.task-row { padding: 11px 12px; }
+
+.task-row .cell-leading { padding-right: 12px; }
+
+.task-title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--text-primary);
+}
+
+.task-sub {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.checkbox img {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 12px;
+  margin-bottom: 8px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 32px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.chip.selected {
+  border-color: var(--border-success);
+  color: var(--text-success);
+}
+
+.chip-check {
+  width: 16px;
+  height: 16px;
+  position: relative;
+}
+
+.chip-check img {
+  position: absolute;
+  width: 11.6px;
+  height: 8.75px;
+  left: calc(50% - 5.8px);
+  top: calc(50% - 4.47px);
+}
+
+.button-layout { padding: 12px; }
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 4px;
+  background: var(--target-red);
+  color: var(--text-inverse);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+/* Spacers matching Figma spacer components */
+.sp-4  { height: 4px; }
+.sp-8  { height: 8px; }
+.sp-12 { height: 12px; }
+.sp-24 { height: 24px; }
+
+/* ---------------- Avatars project page ---------------- */
+/* Design source: Figma node 4171:56507 */
+
+.avatar-grid {
+  display: flex;
+  gap: 36px;
+}
+
+.avatar-col {
+  height: 765px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Panel exports carry baked-in drop shadows that bleed past the node
+   box, so each image is centered oversize inside an exact-size frame */
+.panel { position: relative; }
+
+.panel img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ---------------- Maps project view ---------------- */
+/* Design source: Figma node 4180:60712 */
+
+.maps-grid {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.maps-col {
+  width: 289px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* ---------------- Cornell Tech project view ---------------- */
+/* Design source: Figma node 4180:62115 */
+
+.ct-col {
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ct-col img { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .view { transition: none; }
+  .view.offset-up, .view.offset-down { transform: none; }
+}
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 1320px) {
+  .canvas-grid { flex-direction: column; align-items: center; }
+}
+
+@media (max-width: 980px) {
+  body { flex-direction: column; }
+  .intro { width: 100%; }
+  .intro-inner { min-height: 0; padding: 64px 0; gap: 64px; width: auto; max-width: 396px; margin: 0 auto; }
+  .canvas { min-height: 0; }
+}
