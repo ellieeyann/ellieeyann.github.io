@@ -1,7 +1,15 @@
 /* ============================================================
-   Ellie's Journey — Home
-   Design source: Figma node 4160:56238
+   Ellie's Journey — Home, centered layout
+   Design source: Figma node 4200:66503
    ============================================================ */
+
+@font-face {
+  font-family: 'TWK Lausanne';
+  src: url('fonts/twk_lausanne/TWKLausanne-150.otf') format('opentype');
+  font-weight: 150;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: 'TWK Lausanne';
@@ -40,6 +48,7 @@
   --icon-success: #00A200;
   --target-red: #CC0000;
   --grey-light: #E9E9E9;
+  --text-intro: #3A3A3A;
 
   --font-display: 'TWK Lausanne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-ui: 'Helvetica for Target', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -53,6 +62,12 @@
 
 * { box-sizing: border-box; }
 
+/* Custom cursor: small black circle (18px, hotspot centered),
+   applied everywhere so links/buttons don't swap back to defaults */
+* {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%23000'/%3E%3C/svg%3E") 9 9, auto;
+}
+
 /* The page never physically scrolls — wheel input only switches
    project views, so the left intro panel stays fixed in place. */
 html, body {
@@ -64,131 +79,97 @@ html, body {
 body {
   margin: 0;
   display: flex;
-  background: var(--bg-page);
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
   font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
 }
 
-/* ---------------- Left intro panel ---------------- */
+/* Single centered column: intro header, canvas panel, footer nav */
+.page {
+  width: 746px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* ---------------- Intro header ---------------- */
 
 .intro {
-  width: 557px;
-  flex-shrink: 0;
-  background: var(--bg-primary);
-}
-
-.intro-inner {
-  width: 396px;
-  margin-left: 61px;
-  min-height: 100vh;
-  padding: 96px 0;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.intro-top {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 36px;
 }
 
 .sketch-lines {
-  width: 56px;
-  height: 62px;
+  width: 60.61px;
+  height: 67.58px;
   display: block;
+  flex-shrink: 0;
 }
 
 .intro-text {
   display: flex;
   flex-direction: column;
-  gap: 13px;
-  color: #000;
+  gap: 14.3px;
+  color: var(--text-intro);
   font-family: var(--font-display);
 }
 
 .intro-headline {
   margin: 0;
-  font-size: 28px;
+  font-size: 30.32px;
   font-weight: 250; /* TWK Lausanne 250 */
-  letter-spacing: 0.28px;
+  letter-spacing: 0.3px;
   line-height: normal;
 }
 
 .intro-bio {
   margin: 0;
-  max-width: 372px;
-  font-size: 16px;
-  font-weight: 200; /* TWK Lausanne 200 */
-  letter-spacing: 0.16px;
+  font-size: 17.33px;
+  font-weight: 150; /* TWK Lausanne 150 */
+  letter-spacing: 0.17px;
   line-height: normal;
 }
 
-.projects {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 372px;
-}
-
-.project-row {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  color: #000;
-  text-decoration: none;
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 200; /* TWK Lausanne 200 */
-  letter-spacing: 0.16px;
-  line-height: normal;
-}
-
-.project-row.dimmed { opacity: 0.3; }
-
-.project-org {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.project-logo {
-  width: 16px;
-  height: 16px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.project-logo img { display: block; }
-
-.project-name { width: 113px; white-space: nowrap; }
-.project-desc { white-space: nowrap; }
-
-/* ---------------- Right canvas ---------------- */
+/* ---------------- Center canvas panel ---------------- */
 
 .canvas {
-  flex: 1;
   position: relative;
-  min-height: 100vh;
+  width: 746px;
+  height: 548px;
+  border-radius: 6px;
+  background: var(--bg-page);
+  overflow: hidden;
 }
 
-/* Project views stack in the canvas; only one is visible at a time.
-   The left intro panel never animates — transitions are canvas-only.
+/* Project views stack in the panel; only one is visible at a time.
+   The header and footer never animate — transitions are panel-only.
    Leaving view slides up (or down when going back) while fading out;
-   entering view slides in from the opposite edge while fading in. */
+   entering view slides in from the opposite edge while fading in.
+   Each view's content keeps its original markup and is shrunk to fit
+   the panel with a per-view scale factor (the design renders the task
+   screens at ×0.733 of their source size). */
 .view {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 40px;
   opacity: 0;
   pointer-events: none;
   transform: translateY(0);
   transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
               transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+
+.view > * { transform: scale(var(--view-scale, 1)); }
+
+#view-tasks   { --view-scale: 0.733; }
+#view-avatars { --view-scale: 0.59; }
+#view-maps    { --view-scale: 0.76; }
+#view-cornell { --view-scale: 0.57; }
 
 .view.is-active {
   opacity: 1;
@@ -199,6 +180,48 @@ body {
 .view.offset-up   { transform: translateY(-48px); }
 .view.offset-down { transform: translateY(48px); }
 .view.no-anim     { transition: none; }
+
+/* ---------------- Footer nav ---------------- */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-logos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-btn {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.logo-btn img { display: block; }
+
+.logo-btn.dimmed {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.footer-title {
+  margin: 0;
+  color: var(--text-intro);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 250; /* TWK Lausanne 250 */
+  letter-spacing: 0.16px;
+  line-height: normal;
+  white-space: nowrap;
+  transition: opacity 0.25s ease;
+}
+
+.footer-title.fading { opacity: 0; }
 
 .canvas-grid {
   display: flex;
@@ -669,13 +692,8 @@ body {
 
 /* ---------------- Responsive ---------------- */
 
-@media (max-width: 1320px) {
-  .canvas-grid { flex-direction: column; align-items: center; }
-}
-
-@media (max-width: 980px) {
-  body { flex-direction: column; }
-  .intro { width: 100%; }
-  .intro-inner { min-height: 0; padding: 64px 0; gap: 64px; width: auto; max-width: 396px; margin: 0 auto; }
-  .canvas { min-height: 0; }
+@media (max-width: 800px) {
+  .page { width: 92vw; }
+  .canvas { width: 100%; }
+  .intro-headline br { display: none; }
 }

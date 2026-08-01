@@ -8,51 +8,18 @@
 </head>
 <body>
 
-  <!-- ================= Left intro panel ================= -->
-  <aside class="intro">
-    <div class="intro-inner">
-      <div class="intro-top">
-        <img class="sketch-lines" src="assets/sketch-lines.svg" alt="Ellie Yan sketch logo">
-        <div class="intro-text">
-          <h1 class="intro-headline">Ellie Yan is a product designer with roots in HCI, psychology, and visual arts.</h1>
-          <p class="intro-bio">Currently based in Minneapolis, designing enterprise tools for Target team members. Recent graduate of Barnard College.</p>
-        </div>
-      </div>
+  <div class="page">
 
-      <nav class="projects">
-        <a class="project-row" href="#tasks" data-view="0">
-          <span class="project-org">
-            <span class="project-logo"><img src="assets/logo-target.svg" alt="Target"></span>
-            <span class="project-name">Target</span>
-          </span>
-          <span class="project-desc">Modernizing task management</span>
-        </a>
-        <a class="project-row dimmed" href="#avatars" data-view="1">
-          <span class="project-org">
-            <span class="project-logo"><img src="assets/logo-target-2.svg" alt="Target"></span>
-            <span class="project-name">Target</span>
-          </span>
-          <span class="project-desc">Inclusive, delightful avatars</span>
-        </a>
-        <a class="project-row dimmed" href="#maps" data-view="2">
-          <span class="project-org">
-            <span class="project-logo"><img src="assets/logo-google.svg" alt="Google"></span>
-            <span class="project-name">Google</span>
-          </span>
-          <span class="project-desc">Cultural exploration in Maps</span>
-        </a>
-        <a class="project-row dimmed" href="#cornell" data-view="3">
-          <span class="project-org">
-            <span class="project-logo" style="width:12.53px"><img src="assets/logo-cornell.svg" alt="Cornell Tech" style="margin-left:2px"></span>
-            <span class="project-name">Cornell Tech</span>
-          </span>
-          <span class="project-desc">Digital twins for self-driving cars</span>
-        </a>
-      </nav>
+  <!-- ================= Intro header ================= -->
+  <header class="intro">
+    <img class="sketch-lines" src="assets/sketch-lines.svg" alt="Ellie Yan sketch logo">
+    <div class="intro-text">
+      <h1 class="intro-headline">Ellie Yan is a product designer with roots in<br>HCI, psychology, and visual arts.</h1>
+      <p class="intro-bio">Currently based in Minneapolis, designing enterprise tools for Target team members. Recent graduate of Barnard College.</p>
     </div>
-  </aside>
+  </header>
 
-  <!-- ================= Right canvas ================= -->
+  <!-- ================= Center canvas panel ================= -->
   <main class="canvas">
 
     <!-- View 0: Modernizing task management (Figma node 4160:56238) -->
@@ -394,15 +361,36 @@
 
   </main>
 
+  <!-- ================= Footer nav ================= -->
+  <footer class="footer">
+    <nav class="footer-logos">
+      <a class="logo-btn" href="#tasks" data-view="0" aria-label="Target — Modernizing task management"><img src="assets/logo-target.svg" alt=""></a>
+      <a class="logo-btn dimmed" href="#avatars" data-view="1" aria-label="Target — Inclusive, delightful avatars"><img src="assets/logo-target-2.svg" alt=""></a>
+      <a class="logo-btn dimmed" href="#maps" data-view="2" aria-label="Google — Cultural exploration in Maps"><img src="assets/logo-google.svg" alt=""></a>
+      <a class="logo-btn dimmed" href="#cornell" data-view="3" aria-label="Cornell Tech — Digital twins for self-driving cars"><img src="assets/logo-cornell.svg" alt="" style="margin-left:2px;width:12.53px"></a>
+    </nav>
+    <p class="footer-title">Modernizing task management at Target</p>
+  </footer>
+
+  </div>
+
   <script>
-    // Single-page project switcher. The left intro panel stays fixed;
-    // only the right canvas animates. Moving forward, the leaving view
+    // Single-page project switcher. The header and footer logo nav stay
+    // fixed; the canvas panel animates. Moving forward, the leaving view
     // slides up + fades out while the entering view slides in from below
-    // + fades in; moving back, the directions mirror.
-    // Scroll down → next project, scroll up → previous. Nav rows click to jump.
+    // + fades in; moving back, the directions mirror. The footer title
+    // crossfades to the incoming project's name.
+    // Scroll down → next project, scroll up → previous. Logos click to jump.
     (function () {
       var views = Array.prototype.slice.call(document.querySelectorAll('.view'));
-      var rows = Array.prototype.slice.call(document.querySelectorAll('.project-row[data-view]'));
+      var rows = Array.prototype.slice.call(document.querySelectorAll('.logo-btn[data-view]'));
+      var title = document.querySelector('.footer-title');
+      var titles = [
+        'Modernizing task management at Target',
+        'Inclusive, delightful avatars at Target',
+        'Cultural exploration in Maps at Google',
+        'Digital twins for self-driving cars at Cornell Tech'
+      ];
       var current = 0;
       var locked = false;
 
@@ -442,6 +430,16 @@
         rows.forEach(function (row) {
           row.classList.toggle('dimmed', Number(row.dataset.view) !== i);
         });
+
+        if (instant) {
+          title.textContent = titles[i];
+        } else {
+          title.classList.add('fading');
+          setTimeout(function () {
+            title.textContent = titles[i];
+            title.classList.remove('fading');
+          }, 250);
+        }
         current = i;
       }
 
