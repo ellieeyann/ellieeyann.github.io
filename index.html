@@ -16,6 +16,7 @@
         <div class="intro-text">
           <h1 class="intro-headline">Ellie Yan is a product designer with roots in HCI, psychology, and visual arts.</h1>
           <p class="intro-bio">Currently based in Minneapolis, designing enterprise tools for Target team members. Recent graduate of Barnard College.</p>
+          <a class="resume-link" href="resume/index.html" target="_blank" rel="noopener">Resume</a>
         </div>
       </div>
 
@@ -394,77 +395,341 @@
 
   </main>
 
+  <!-- Floating glass blurb — appears while hovering the task-management
+       project's cards, rides alongside the pointer -->
+  <div class="glass-tip" id="tasks-tip" aria-hidden="true">
+    <p>Previously, Target stores relied on paper assignment sheets to coordinate workload. Digital task assignments is a 0&rarr;1 system bringing structured task management to 400k+ employees across 2,000 Target stores.</p>
+    <p>We redesigned the fragmented, disconnected nature of paper into an experience that offers real-time visibility, interconnectedness across teams, and flexibility needed for the fast-paced nature of daily store operations.</p>
+    <div class="glass-tip-foot">
+      <p class="glass-tip-meta">Mobile &bull; Web</p>
+      <p class="glass-tip-esc">Press esc to dismiss</p>
+    </div>
+  </div>
+
+  <div class="glass-tip" id="avatars-tip" aria-hidden="true">
+    <p>Previously, when Target employees opened their daily work app, they were greeted by randomized avatars from a generic list of 18 presets.</p>
+    <p>We introduced customizable avatars, a new way for employees to craft a digital identity that feels inclusive and representative.</p>
+    <div class="glass-tip-foot">
+      <p class="glass-tip-meta">Mobile</p>
+      <p class="glass-tip-esc">Press esc to dismiss</p>
+    </div>
+  </div>
+
+  <div class="glass-tip" id="maps-tip" aria-hidden="true">
+    <p>A neighborhood&rsquo;s cultural history lives in oral histories, community archives, and local record-keeping. Culture Walk brings that cultural richness directly into Google Maps, layering it onto walking routes through AR wayfinding and community-contributed archives.</p>
+    <div class="glass-tip-foot">
+      <p class="glass-tip-meta">Mobile</p>
+      <p class="glass-tip-esc">Press esc to dismiss</p>
+    </div>
+  </div>
+
+  <div class="glass-tip" id="cornell-tip" aria-hidden="true">
+    <p>We instinctively understand that driver-pedestrian interactions differ across cultures and cities, which means one universal driving behavior won&rsquo;t suffice for autonomous vehicles once deployed globally. To inform the design of safe and culturally-aware AVs, we built digital twins of 3 NYC locales to observe driver-pedestrian interactions in a controlled VR environment.</p>
+    <div class="glass-tip-foot">
+      <p class="glass-tip-meta">VR</p>
+      <p class="glass-tip-esc">Press esc to dismiss</p>
+    </div>
+  </div>
+
   <script>
-    // Single-page project switcher. The left intro panel stays fixed;
-    // only the right canvas animates. Moving forward, the leaving view
-    // slides up + fades out while the entering view slides in from below
-    // + fades in; moving back, the directions mirror.
-    // Scroll down → next project, scroll up → previous. Nav rows click to jump.
+    // Picker-style project switcher. The left intro panel stays fixed; the
+    // canvas behaves like the drum of an iOS picker. A two-finger scroll
+    // tugs the current project against a rubber band while its neighbour
+    // crests the opposite edge — scroll down and the next project peeks up
+    // from the bottom, scroll up and the previous one dips in from the top.
+    // Let go short of the detent and the drum springs home; push past it and
+    // it clicks over to that project. Nav rows and arrow keys jump directly.
     (function () {
-      var views = Array.prototype.slice.call(document.querySelectorAll('.view'));
-      var rows = Array.prototype.slice.call(document.querySelectorAll('.project-row[data-view]'));
-      var current = 0;
-      var locked = false;
+      var canvas = document.querySelector('.canvas');
+      var views  = Array.prototype.slice.call(document.querySelectorAll('.view'));
+      var rows   = Array.prototype.slice.call(document.querySelectorAll('.project-row[data-view]'));
+      var calm   = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-      function reflow(el) { void el.offsetWidth; }
+      // Feel — distances in px, durations in ms. TUG and PEEK are deliberately
+      // lopsided: the outgoing project only nudges, while the incoming one
+      // travels far enough to actually show its top edge.
+      var TUG    = 56;  // how far the settled project lifts at a full tug
+      var PEEK   = 200; // how much of the neighbouring project crests the edge
+      var DAMP   = 32;  // wheel px per unit of rubber band; higher = stiffer
+      var DETENT = 44;  // accumulated wheel px that clicks the drum over
+      var COMMIT = 720; // click-over animation (outlasts the 0.7s fade)
+      var SPRING = 440; // snap-back animation (outlasts the 0.42s fade)
+      var QUIET  = 120; // wheel silence that reads as "fingers lifted"
 
-      function resetOffsets(el) {
-        el.classList.add('no-anim');
-        el.classList.remove('offset-up', 'offset-down');
-        reflow(el);
-        el.classList.remove('no-anim');
+      var current  = 0;
+      var acc      = 0;     // accumulated wheel delta for the gesture in flight
+      var settling = false; // a click-over or snap-back is playing
+      var cooling  = false; // swallowing the momentum tail after a click-over
+      var height   = 0;     // cached so a gesture never reads layout
+      var bank     = 0;     // fresh scrolling banked while an animation plays
+      var banking  = false;
+      var lastDir  = 0, lastMag = 0, lastTime = 0; // fresh-gesture detection
+      var quietTimer, settleTimer, coolTimer;
+
+      function measure() { height = canvas.offsetHeight || window.innerHeight; }
+
+      function place(view, y, scale, opacity, z) {
+        view.style.transform = (y === 0 && scale === 1)
+          ? ''
+          : 'translateY(' + y.toFixed(2) + 'px) scale(' + scale.toFixed(4) + ')';
+        view.style.opacity = opacity;
+        view.style.zIndex = z;
       }
 
-      function show(i, instant) {
-        if (i === current || i < 0 || i >= views.length) return;
-        var leaving = views[current];
-        var entering = views[i];
-        var forward = i > current;
+      // Draw the whole drum for one instant. `t` is the tug amount (0 at rest,
+      // approaching 1 at the detent); `dir` is +1 while the next project rises
+      // from the bottom, -1 while the previous one drops in from the top. The
+      // neighbour rides above the settled view so it reads as sliding over it.
+      function paint(t, dir) {
+        var neighbour = dir ? current + dir : -1;
+        views.forEach(function (view, i) {
+          if (i === current) {
+            place(view, -dir * t * TUG, 1 - t * 0.02, 1 - t * 0.06, 1);
+          } else if (i === neighbour) {
+            place(view, dir * (height - t * PEEK), 0.98 + t * 0.02, 1, 2);
+          } else {
+            place(view, i < current ? -height : height, 0.98, 0, 0);
+          }
+          view.classList.toggle('tugging', t > 0 && (i === current || i === neighbour));
+        });
+      }
 
-        if (instant) {
-          leaving.classList.remove('is-active');
-          entering.classList.add('is-active');
-        } else {
-          // Leaving view: fade out while sliding away
-          leaving.classList.remove('is-active');
-          leaving.classList.add(forward ? 'offset-up' : 'offset-down');
-          setTimeout(function () { resetOffsets(leaving); }, 600);
+      function sync() {
+        views.forEach(function (view, i) {
+          view.classList.toggle('is-active', i === current);
+          if (i === current) view.removeAttribute('inert');
+          else view.setAttribute('inert', '');
+        });
+        rows.forEach(function (row) {
+          row.classList.toggle('dimmed', Number(row.dataset.view) !== current);
+        });
+      }
 
-          // Entering view: start offset without animating, then
-          // transition to resting position while fading in
-          entering.classList.add('no-anim', forward ? 'offset-down' : 'offset-up');
-          reflow(entering);
-          entering.classList.remove('no-anim');
-          entering.classList.remove('offset-up', 'offset-down');
-          entering.classList.add('is-active');
+      // Hand the named curve to the two views taking part, apply the change,
+      // then strip every curve once it has played. Views that are not part of
+      // the move stay curve-less so they can be re-parked without animating.
+      function animate(cast, curve, ms, mutate) {
+        clearTimeout(settleTimer);
+        views.forEach(function (view) { view.classList.remove('settling', 'springing'); });
+        cast.forEach(function (view) { if (view) view.classList.add(curve); });
+        settling = true;
+        mutate();
+        settleTimer = setTimeout(function () {
+          views.forEach(function (view) { view.classList.remove('settling', 'springing'); });
+          settling = false;
+          paint(0, 0); // drops the transform on the settled view so text re-sharpens
+          var queued = bank;
+          bank = 0;
+          banking = false;
+          // Scrolling done while the animation played chains straight into
+          // the next click-over instead of vanishing.
+          if (Math.abs(queued) >= DETENT) clickOver(queued > 0 ? 1 : -1);
+        }, ms);
+      }
+
+      function goTo(i) {
+        i = Math.max(0, Math.min(views.length - 1, i));
+        if (i === current || settling) return;
+        acc = 0;
+        clearTimeout(quietTimer);
+        if (calm.matches) {
+          current = i;
+          sync();
+          paint(0, 0);
+          return;
+        }
+        animate([views[current], views[i]], 'settling', COMMIT, function () {
+          current = i;
+          sync();
+          paint(0, 0);
+        });
+      }
+
+      // Released before the detent — unwind the rubber band.
+      function spring() {
+        if (acc === 0 || settling) return;
+        var dir = acc > 0 ? 1 : -1;
+        acc = 0;
+        animate([views[current], views[current + dir]], 'springing', SPRING, function () {
+          paint(0, 0);
+        });
+      }
+
+      // A trackpad keeps firing wheel events after the fingers lift, so once
+      // the drum clicks over it ignores the decaying momentum tail — but only
+      // the tail: a fresh push (detected above) punches straight through.
+      function cool() {
+        clearTimeout(coolTimer);
+        coolTimer = setTimeout(function () { cooling = false; }, QUIET + 40);
+      }
+
+      function clickOver(dir) {
+        cooling = true;
+        cool();
+        goTo(current + dir);
+      }
+
+      window.addEventListener('wheel', function (e) {
+        var d = e.deltaY;
+        if (e.deltaMode === 1) d *= 16;            // lines
+        else if (e.deltaMode === 2) d *= height;   // pages
+        var mag = Math.abs(d);
+        if (mag < 1) return;
+
+        // A momentum tail decays steadily inside a dense event stream. An
+        // event after a gap, a direction flip, or a delta growing again is
+        // the user's fingers — never ignore those.
+        var now = e.timeStamp || Date.now();
+        var fresh = now - lastTime > 160 ||
+                    (d > 0) !== (lastDir > 0) ||
+                    mag > lastMag * 1.3 + 4;
+        lastTime = now; lastDir = d; lastMag = mag;
+
+        if (settling) {
+          // Mid-animation: bank deliberate scrolling so it chains into the
+          // next click-over the moment the drum lands, instead of dying.
+          if (fresh) banking = true;
+          if (banking) bank += d;
+          return;
+        }
+        if (cooling) {
+          if (!fresh) { cool(); return; } // still just momentum — swallow it
+          clearTimeout(coolTimer);
+          cooling = false;                // a real push cuts the cooldown short
         }
 
-        rows.forEach(function (row) {
-          row.classList.toggle('dimmed', Number(row.dataset.view) !== i);
-        });
-        current = i;
-      }
+        if (calm.matches) { clickOver(d > 0 ? 1 : -1); return; }
+
+        if (acc !== 0 && (d > 0) !== (acc > 0)) acc = 0; // reversing restarts the tug
+        acc += d;
+
+        var dir  = acc > 0 ? 1 : -1;
+        var edge = dir > 0 ? current === views.length - 1 : current === 0;
+        var t    = 1 - Math.exp(-Math.abs(acc) / DAMP);  // rubber band, saturating
+
+        if (!edge && Math.abs(acc) >= DETENT) { clickOver(dir); return; }
+        paint(edge ? t * 0.35 : t, dir); // at either end there is nothing to peek at
+        clearTimeout(quietTimer);
+        quietTimer = setTimeout(spring, QUIET);
+      }, { passive: true });
 
       rows.forEach(function (row) {
         row.addEventListener('click', function (e) {
           e.preventDefault();
-          show(Number(row.dataset.view));
+          goTo(Number(row.dataset.view));
         });
       });
 
-      // Lock briefly after each switch so one touchpad gesture
-      // (many wheel events + momentum) advances a single view.
-      window.addEventListener('wheel', function (e) {
-        if (locked || Math.abs(e.deltaY) < 10) return;
-        var next = current + (e.deltaY > 0 ? 1 : -1);
-        if (next < 0 || next >= views.length) return;
-        locked = true;
-        show(next);
-        setTimeout(function () { locked = false; }, 900);
+      window.addEventListener('keydown', function (e) {
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        var step = { ArrowDown: 1, PageDown: 1, ArrowUp: -1, PageUp: -1 }[e.key];
+        if (!step) return;
+        e.preventDefault();
+        goTo(current + step);
+      });
+
+      window.addEventListener('resize', function () {
+        measure();
+        if (!settling && acc === 0) paint(0, 0); // re-park the off-screen views
+      });
+
+      measure();
+      current = { '#avatars': 1, '#maps': 2, '#cornell': 3 }[window.location.hash] || 0;
+      sync();
+      paint(0, 0);
+    })();
+
+    // Round black dot cursor. Tracks the pointer 1:1 — no trail — and
+    // opens into a ring over anything clickable. Touch devices and
+    // coarse pointers keep the native cursor.
+    (function () {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+      var dot = document.createElement('div');
+      dot.className = 'cursor-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(dot);
+      document.documentElement.classList.add('custom-cursor');
+
+      // Elements that swell the lens into its hover state — includes the
+      // project graphics that summon a glass blurb
+      var CLICKABLE = 'a, button, [role="button"], input, select, textarea, label, #view-tasks .card, #view-avatars .panel, #view-maps .panel, #view-cornell .ct-col img';
+
+      window.addEventListener('pointermove', function (e) {
+        dot.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+        dot.classList.add('on');
+        var hit = e.target && e.target.closest ? e.target.closest(CLICKABLE) : null;
+        dot.classList.toggle('link', !!hit);
       }, { passive: true });
 
-      var initial = { '#avatars': 1, '#maps': 2, '#cornell': 3 }[window.location.hash];
-      if (initial) show(initial, true);
+      window.addEventListener('pointerdown', function () { dot.classList.add('down'); });
+      window.addEventListener('pointerup',   function () { dot.classList.remove('down'); });
+
+      // Hide the dot when the pointer leaves the window
+      document.documentElement.addEventListener('mouseleave', function () { dot.classList.remove('on'); });
+      document.documentElement.addEventListener('mouseenter', function () { dot.classList.add('on'); });
+    })();
+
+    // Floating glass blurbs: each project view can pair a hover region
+    // with a panel that rides beside the cursor, flipping sides near the
+    // viewport edges. Esc dismisses until the pointer leaves the region.
+    (function () {
+      var pairs = [
+        ['#view-tasks .card',    'tasks-tip'],
+        ['#view-avatars .panel', 'avatars-tip'],
+        ['#view-maps .panel',    'maps-tip'],
+        ['#view-cornell .ct-col img', 'cornell-tip']
+      ].map(function (p) {
+        return { sel: p[0], tip: document.getElementById(p[1]) };
+      }).filter(function (p) { return p.tip; });
+      if (!pairs.length) return;
+
+      var OFFSET = 26; // gap between pointer and panel
+      var active = null;     // pair currently showing
+      var dismissed = false; // Esc pressed — stays hidden until re-entry
+
+      function hide() {
+        if (!active) return;
+        active.tip.classList.remove('show');
+        active.tip.setAttribute('aria-hidden', 'true');
+        active = null;
+      }
+
+      window.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { dismissed = true; hide(); }
+      });
+
+      window.addEventListener('pointermove', function (e) {
+        var hit = null;
+        if (e.target && e.target.closest) {
+          for (var i = 0; i < pairs.length; i++) {
+            if (e.target.closest(pairs[i].sel)) { hit = pairs[i]; break; }
+          }
+        }
+
+        if (!hit) {
+          hide();
+          dismissed = false; // leaving the region re-arms the tooltip
+          return;
+        }
+        if (dismissed) return;
+        if (active && active !== hit) hide();
+
+        var tip = hit.tip;
+        if (!tip.tipW) { tip.tipW = tip.offsetWidth; tip.tipH = tip.offsetHeight; }
+        var x = e.clientX + OFFSET;
+        var y = e.clientY + OFFSET;
+        if (x + tip.tipW > window.innerWidth - 16)  x = e.clientX - tip.tipW - OFFSET;
+        if (y + tip.tipH > window.innerHeight - 16) y = e.clientY - tip.tipH - OFFSET;
+        tip.style.left = x + 'px';
+        tip.style.top  = y + 'px';
+
+        if (active !== hit) {
+          tip.classList.add('show');
+          tip.setAttribute('aria-hidden', 'false');
+          active = hit;
+        }
+      }, { passive: true });
     })();
   </script>
 

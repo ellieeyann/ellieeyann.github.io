@@ -124,6 +124,19 @@ body {
   line-height: normal;
 }
 
+.resume-link {
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 200;
+  letter-spacing: 0.14px;
+  color: #999999;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.18s ease;
+}
+
+.resume-link:hover { color: var(--text-secondary); }
+
 .projects {
   display: flex;
   flex-direction: column;
@@ -144,7 +157,12 @@ body {
   line-height: normal;
 }
 
+.project-row { transition: opacity 0.18s ease; }
+
 .project-row.dimmed { opacity: 0.3; }
+
+/* Hovering a dimmed row darkens its text partway toward the active state */
+.project-row.dimmed:hover { opacity: 0.55; }
 
 .project-org {
   display: flex;
@@ -172,10 +190,13 @@ body {
   min-height: 100vh;
 }
 
-/* Project views stack in the canvas; only one is visible at a time.
-   The left intro panel never animates — transitions are canvas-only.
-   Leaving view slides up (or down when going back) while fading out;
-   entering view slides in from the opposite edge while fading in. */
+/* Project views stack in the canvas like the drum of an iOS picker: the
+   settled view sits centred and its neighbours wait just off the top and
+   bottom edges. The left intro panel never animates — the drum is
+   canvas-only. During a gesture the switcher script writes transform and
+   opacity directly on each event, so the views carry no transition by
+   default; the classes below only supply the curve for the snap that
+   follows once the fingers lift. */
 .view {
   position: absolute;
   inset: 0;
@@ -185,9 +206,7 @@ body {
   padding: 60px 40px;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(0);
-  transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
-              transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform-origin: 50% 50%;
 }
 
 .view.is-active {
@@ -195,10 +214,26 @@ body {
   pointer-events: auto;
 }
 
-/* Slide offsets — applied by the switcher script around a transition */
-.view.offset-up   { transform: translateY(-48px); }
-.view.offset-down { transform: translateY(48px); }
-.view.no-anim     { transition: none; }
+/* Mid-tug — promote a layer so the drum tracks the trackpad */
+.view.tugging { will-change: transform, opacity; }
+
+/* Detent passed: the drum clicks over to the neighbouring project. The
+   fade runs the full length of the travel on a symmetric ease so opacity
+   drifts rather than drops — most of the leaving view's fade happens
+   while it is already sliding away. */
+.view.settling {
+  will-change: transform, opacity;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.7s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
+/* Released short of the detent: the rubber band pulls the view home, with
+   a little overshoot so it reads as elastic rather than mechanical. */
+.view.springing {
+  will-change: transform, opacity;
+  transition: transform 0.38s cubic-bezier(0.34, 1.4, 0.5, 1),
+              opacity 0.42s ease-in-out;
+}
 
 .canvas-grid {
   display: flex;
@@ -662,9 +697,119 @@ body {
 
 .ct-col img { display: block; }
 
+/* ---------------- Custom cursor ---------------- */
+/* A plain black dot riding the pointer 1:1 (no trail). Only on precise
+   hover devices; the script tags <html> with .custom-cursor once the dot
+   exists, so without JS the native cursor is untouched. */
+
+@media (hover: hover) and (pointer: fine) {
+  .custom-cursor, .custom-cursor * { cursor: none !important; }
+}
+
+.cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border-radius: 50%;
+  /* Clear glass lens: transparent centre, one rim-light that fades
+     smoothly into the border (a single ring, no nested circles), a
+     light refracting blur underneath and a soft lift */
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0) 70%,
+      rgba(255, 255, 255, 0.30) 100%);
+  backdrop-filter: blur(1.5px) saturate(1.6) brightness(1.03);
+  -webkit-backdrop-filter: blur(1.5px) saturate(1.6) brightness(1.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: width 0.2s ease, height 0.2s ease, margin 0.2s ease,
+              background-color 0.2s ease, border-color 0.2s ease,
+              box-shadow 0.2s ease, opacity 0.15s ease;
+}
+
+/* Translucency lives in the glass fill, so the element itself is solid */
+.cursor-dot.on { opacity: 1; }
+
+/* Over anything interactive the lens keeps its glass look and simply
+   swells, signalling "you can act here" */
+.cursor-dot.link {
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+}
+
+.cursor-dot.down { opacity: 0.7; }
+
+/* ---------------- Floating glass tooltip ---------------- */
+/* Same glass language as the cursor: translucent, backdrop-blurred,
+   bright rim. Rides beside the pointer over the first project's cards. */
+
+.glass-tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 340px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px) saturate(1.6);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: 14px;
+  letter-spacing: 0.14px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  pointer-events: none;
+  z-index: 9998; /* under the cursor dot */
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease; /* exit stays brisk */
+}
+
+.glass-tip.show {
+  opacity: 1;
+  transform: translateY(0);
+  /* entrance drifts in more gently than it leaves */
+  transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+}
+
+.glass-tip p { margin: 0; }
+.glass-tip p + p { margin-top: 12px; }
+
+/* Footer row: platform tags left, esc hint right, on one line */
+.glass-tip-foot {
+  margin-top: 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.glass-tip .glass-tip-foot p { margin-top: 0; } /* outranks the p + p spacing rule */
+
+.glass-tip-meta {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.6px;
+}
+
+.glass-tip .glass-tip-esc {
+  margin-left: auto; /* stays right even when it's the only footer item */
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .view { transition: none; }
-  .view.offset-up, .view.offset-down { transform: none; }
+  .view.settling, .view.springing { transition: none; }
 }
 
 /* ---------------- Responsive ---------------- */
