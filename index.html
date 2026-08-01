@@ -750,7 +750,10 @@
     // Floating glass blurbs: each project view can pair a hover region
     // with a panel that rides beside the cursor, flipping sides near the
     // viewport edges. Esc dismisses until the pointer leaves the region.
+    // Hover-only: touch devices never see them (taps fire synthetic
+    // pointermoves that would strand the panel on screen).
     (function () {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
       var pairs = [
         ['#view-tasks .card',    'tasks-tip'],
         ['#view-avatars .panel', 'avatars-tip'],
