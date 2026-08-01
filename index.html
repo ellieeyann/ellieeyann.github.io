@@ -394,6 +394,15 @@
       var current = 0;
       var locked = false;
 
+      // Scale the whole page as one unit so the layout keeps the
+      // design's proportions (1728×997 artboard) at any window size.
+      function fitPage() {
+        var scale = Math.min(window.innerWidth / 1728, window.innerHeight / 997);
+        document.documentElement.style.setProperty('--page-scale', scale);
+      }
+      window.addEventListener('resize', fitPage);
+      fitPage();
+
       function reflow(el) { void el.offsetWidth; }
 
       function resetOffsets(el) {

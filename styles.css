@@ -86,12 +86,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Single centered column: intro header, canvas panel, footer nav */
+/* Single centered column: intro header, canvas panel, footer nav.
+   The column is laid out at the design's native size (746px wide on a
+   1728×997 artboard) and scaled as one unit to fit the viewport, so
+   every window size shows the same proportions. --page-scale is set
+   from JS on load/resize. */
 .page {
   width: 746px;
   display: flex;
   flex-direction: column;
   gap: 48px;
+  transform: scale(var(--page-scale, 1));
 }
 
 /* ---------------- Intro header ---------------- */
@@ -690,10 +695,3 @@ body {
   .view.offset-up, .view.offset-down { transform: none; }
 }
 
-/* ---------------- Responsive ---------------- */
-
-@media (max-width: 800px) {
-  .page { width: 92vw; }
-  .canvas { width: 100%; }
-  .intro-headline br { display: none; }
-}
