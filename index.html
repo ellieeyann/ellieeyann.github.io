@@ -569,6 +569,25 @@
         goTo(current + dir);
       }
 
+      // Core of the gesture: one increment of drum travel, from wheel or
+      // touch. Accumulates against the rubber band, commits past the
+      // detent, otherwise paints the tug and arms the spring-back.
+      function feed(d) {
+        if (calm.matches) { clickOver(d > 0 ? 1 : -1); return; }
+
+        if (acc !== 0 && (d > 0) !== (acc > 0)) acc = 0; // reversing restarts the tug
+        acc += d;
+
+        var dir  = acc > 0 ? 1 : -1;
+        var edge = dir > 0 ? current === views.length - 1 : current === 0;
+        var t    = 1 - Math.exp(-Math.abs(acc) / DAMP);  // rubber band, saturating
+
+        if (!edge && Math.abs(acc) >= DETENT) { clickOver(dir); return; }
+        paint(edge ? t * 0.35 : t, dir); // at either end there is nothing to peek at
+        clearTimeout(quietTimer);
+        quietTimer = setTimeout(spring, QUIET);
+      }
+
       window.addEventListener('wheel', function (e) {
         var d = e.deltaY;
         if (e.deltaMode === 1) d *= 16;            // lines
@@ -598,19 +617,32 @@
           cooling = false;                // a real push cuts the cooldown short
         }
 
-        if (calm.matches) { clickOver(d > 0 ? 1 : -1); return; }
+        feed(d);
+      }, { passive: true });
 
-        if (acc !== 0 && (d > 0) !== (acc > 0)) acc = 0; // reversing restarts the tug
-        acc += d;
+      // Touch: drag the drum directly — the same rubber band, fed by real
+      // finger travel (no synthetic momentum to filter). Lifting short of
+      // the detent springs back immediately.
+      var touchY = null;
+      window.addEventListener('touchstart', function (e) {
+        touchY = (e.touches.length === 1 && e.target.closest &&
+                  e.target.closest('.canvas'))
+          ? e.touches[0].clientY
+          : null;
+      }, { passive: true });
 
-        var dir  = acc > 0 ? 1 : -1;
-        var edge = dir > 0 ? current === views.length - 1 : current === 0;
-        var t    = 1 - Math.exp(-Math.abs(acc) / DAMP);  // rubber band, saturating
+      window.addEventListener('touchmove', function (e) {
+        if (touchY === null || settling || cooling) return;
+        var y = e.touches[0].clientY;
+        var d = (touchY - y) * 1.4; // finger up = next; gain for short screens
+        touchY = y;
+        if (Math.abs(d) >= 0.5) feed(d);
+      }, { passive: true });
 
-        if (!edge && Math.abs(acc) >= DETENT) { clickOver(dir); return; }
-        paint(edge ? t * 0.35 : t, dir); // at either end there is nothing to peek at
+      window.addEventListener('touchend', function () {
+        touchY = null;
         clearTimeout(quietTimer);
-        quietTimer = setTimeout(spring, QUIET);
+        spring();
       }, { passive: true });
 
       rows.forEach(function (row) {
@@ -637,6 +669,51 @@
       current = { '#avatars': 1, '#maps': 2, '#cornell': 3 }[window.location.hash] || 0;
       sync();
       paint(0, 0);
+    })();
+
+    // Fit-to-canvas: each project composition is a fixed-pixel Figma
+    // export, so instead of reflowing them per breakpoint, scale each one
+    // down (never up) to fit inside the canvas padding box. Phones, small
+    // laptops, and ultrawides all see the full artwork.
+    (function () {
+      if (!window.getComputedStyle) return;
+      var views = Array.prototype.slice.call(document.querySelectorAll('.view'));
+      if (!views.length) return;
+      var natural = null;
+
+      function measure() {
+        natural = views.map(function (view) {
+          var stage = view.firstElementChild;
+          if (!stage) return null;
+          var prev = stage.style.transform;
+          stage.style.transform = 'none';
+          var r = { w: stage.offsetWidth, h: stage.offsetHeight };
+          stage.style.transform = prev;
+          return r;
+        });
+      }
+
+      function fit() {
+        views.forEach(function (view, i) {
+          var stage = view.firstElementChild;
+          var n = natural[i];
+          if (!stage || !n || !n.w || !n.h) return;
+          var cs = window.getComputedStyle(view);
+          var availW = view.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+          var availH = view.clientHeight - parseFloat(cs.paddingTop)  - parseFloat(cs.paddingBottom);
+          var s = Math.min(1, availW / n.w, availH / n.h);
+          stage.style.transform = s < 0.999 ? 'scale(' + s.toFixed(4) + ')' : '';
+        });
+      }
+
+      function refresh() { measure(); fit(); }
+
+      window.addEventListener('resize', fit);
+      window.addEventListener('load', refresh);
+      // Re-measure once real fonts arrive — the task view's natural size
+      // depends on text metrics.
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
+      refresh();
     })();
 
     // Round black dot cursor. Tracks the pointer 1:1 — no trail — and
