@@ -421,7 +421,13 @@ body {
 
   #nyc-digital-twins .project-graphic { position: absolute; }
   #nyc-digital-twins .g-laptop { left: 20.07%; top: 0; width: 79.93%; }
-  #nyc-digital-twins .g-oculus { left: 0; top: 50.86%; width: 53.93%; }
+
+  /* The headset PNG carries ~17% transparent padding a side, and the
+     scaleX(-1) mirror puts the 227/1264 right pad on the left — so a box
+     at left:0 still leaves a visible gap. Pulling it back by that pad
+     (17.959% × 53.93% ≈ 9.69% of the track) sets the headset itself on
+     the margin and closes the dead space on the left of the scene. */
+  #nyc-digital-twins .g-oculus { left: -9.69%; top: 50.86%; width: 53.93%; }
 
   .footer {
     margin: 88px 48px 72px;
