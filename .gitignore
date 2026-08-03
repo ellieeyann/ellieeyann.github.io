@@ -1,8 +1,8 @@
 .DS_Store
 
-# TWK Lausanne is licensed — publish only the weights the site uses
+# TWK Lausanne is licensed — publish only the weights the site uses.
+# These must match the @font-face rules in styles.css: 150 and 250.
 fonts/twk_lausanne/*
-!fonts/twk_lausanne/TWKLausanne-200.woff2
-!fonts/twk_lausanne/TWKLausanne-200.otf
+!fonts/twk_lausanne/TWKLausanne-150.otf
 !fonts/twk_lausanne/TWKLausanne-250.woff2
 !fonts/twk_lausanne/TWKLausanne-250.otf

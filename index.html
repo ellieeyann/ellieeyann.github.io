@@ -4,474 +4,174 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ellie Yan — Product Designer</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <div class="page">
 
-  <!-- ================= Intro header ================= -->
-  <header class="intro">
-    <img class="sketch-lines" src="assets/sketch-lines.svg" alt="Ellie Yan sketch logo">
-    <div class="intro-text">
-      <h1 class="intro-headline">Ellie Yan is a product designer with roots in<br>HCI, psychology, and visual arts.</h1>
-      <p class="intro-bio">Currently based in Minneapolis, designing enterprise tools for Target team members. Recent graduate of Barnard College.</p>
-    </div>
-  </header>
-
-  <!-- ================= Center canvas panel ================= -->
-  <main class="canvas">
-
-    <!-- View 0: Modernizing task management (Figma node 4160:56238) -->
-    <section class="view is-active" id="view-tasks">
-    <div class="canvas-grid">
-
-      <div class="col-a">
-
-        <!-- Team card -->
-        <section class="card team-card">
-          <div class="cell">
-            <div class="cell-leading" style="padding-right:8px">
-              <!-- TM-in-progress avatar illustration, layered SVG export -->
-              <div class="icon-stack clip" style="width:32px;height:32px;margin:0 2px">
-                <img src="assets/tm-torso.svg"    alt="" style="left:3.73px;top:16px">
-                <img src="assets/tm-hairback.svg" alt="" style="left:6.90px;top:2.13px">
-                <img src="assets/tm-face.svg"     alt="" style="left:8.22px;top:3.14px">
-                <img src="assets/tm-shirt.svg"    alt="" style="left:3.73px;top:16.08px">
-                <img src="assets/tm-shadow.svg"   alt="" style="left:7.89px;top:24.10px">
-                <img src="assets/tm-badge.svg"    alt="" style="left:14.21px;top:19.68px">
-                <img src="assets/tm-earring.svg"  alt="" style="left:16.16px;top:11.73px">
-                <img src="assets/tm-bangs.svg"    alt="" style="left:7.32px;top:2.13px">
-                <img src="assets/tm-knob.svg"     alt="" style="left:14.67px;top:16.53px">
-                <img src="assets/tm-vector.svg"   alt="" style="left:16px;top:17.87px">
-              </div>
-            </div>
-            <div class="cell-center">
-              <div style="display:flex;align-items:center;gap:8px">
-                <h2 class="cell-headline-lg">Team</h2>
-                <div class="icon-stack" style="width:16px;height:16px">
-                  <img src="assets/pin.svg" alt="Pinned" style="left:1.53px;top:0.67px">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="sp-8"></div>
-
-          <div class="stat-row">
-            <div class="stat-box"><p class="stat-label">On-duty</p><p class="stat-value">46</p></div>
-            <div class="stat-box"><p class="stat-label">Today</p><p class="stat-value">94</p></div>
-            <div class="stat-box"><p class="stat-label">Call-ins</p><p class="stat-value">3</p></div>
-            <div class="stat-box"><p class="stat-label">Trainings</p><p class="stat-value">59</p></div>
-          </div>
-
-          <div class="sp-8"></div>
-
-          <div class="cell team-member-row">
-            <div class="cell-leading">
-              <div class="member-avatar"><img src="assets/avatar-ellie-sm.png" alt="Ellie Yan avatar"></div>
-            </div>
-            <div class="cell-center">
-              <div>
-                <p class="cell-headline">Ellie Yan</p>
-                <p class="cell-body">3 of 5 tasks complete</p>
-              </div>
-              <div class="progress-track" style="width:248px">
-                <div class="progress-fill" style="width:59.36%"></div>
-              </div>
-            </div>
-            <div class="chevron-20"><img src="assets/chevron-sm.svg" alt=""></div>
-          </div>
-
-          <div class="cell team-member-row">
-            <div class="cell-leading">
-              <div class="member-avatar"><img src="assets/avatar-john-sm.png" alt="John App avatar"></div>
-            </div>
-            <div class="cell-center">
-              <div>
-                <p class="cell-headline">John App</p>
-                <p class="cell-body">4 of 6 tasks complete</p>
-              </div>
-              <div class="progress-track" style="width:248px">
-                <div class="progress-fill" style="width:59.36%"></div>
-              </div>
-            </div>
-            <div class="chevron-20"><img src="assets/chevron-sm.svg" alt=""></div>
-          </div>
-
-          <div class="sp-12"></div>
-        </section>
-
-        <!-- To-do card -->
-        <section class="card">
-          <div class="cell">
-            <div class="cell-leading" style="padding-right:8px">
-              <div class="icon-stack clip" style="width:32px;height:32px;margin:0 2px">
-                <img src="assets/icon-tasks.svg" alt="" style="left:6.67px;top:2.67px">
-              </div>
-            </div>
-            <div class="cell-center"><h2 class="cell-headline-lg">To-do</h2></div>
-            <div class="cell-trailing"><a class="see-all" href="#">See all</a></div>
-          </div>
-
-          <div class="cell todo-row">
-            <div class="cell-leading">
-              <div class="icon-stack" style="width:36px;height:36px">
-                <img src="assets/progress-circle.svg" alt="" style="left:0;top:0">
-                <img src="assets/arc-green.svg"       alt="" style="left:17px;top:0">
-                <img src="assets/icon-workday.svg"    alt="" style="left:10px;top:8px">
-              </div>
-            </div>
-            <div class="cell-center">
-              <p class="todo-headline">Workday training</p>
-              <p class="todo-body">Sanitization module</p>
-              <p class="todo-caption">30 min</p>
-            </div>
-            <div class="chevron-24"><img src="assets/chevron-24.svg" alt=""></div>
-          </div>
-
-          <div class="cell todo-row">
-            <div class="cell-leading">
-              <div class="icon-stack" style="width:36px;height:36px">
-                <img src="assets/progress-circle.svg" alt="" style="left:0;top:0">
-                <img src="assets/check-green.svg"     alt="" style="left:8.94px;top:8.72px">
-                <img src="assets/ring-green.svg"      alt="" style="left:17px;top:0">
-              </div>
-            </div>
-            <div class="cell-center">
-              <p class="todo-headline">Fill eggs and milk</p>
-              <p class="todo-body">Zone as you go</p>
-              <p class="todo-caption">1 hr</p>
-            </div>
-            <div class="chevron-24"><img src="assets/chevron-24.svg" alt=""></div>
-          </div>
-
-          <div class="cell todo-row">
-            <div class="cell-leading">
-              <div class="icon-stack" style="width:36px;height:36px">
-                <img src="assets/timer-circle.svg"   alt="" style="left:0;top:0">
-                <img src="assets/icon-truck.svg"     alt="" style="left:8.83px;top:10.42px">
-                <img src="assets/timer-circle-2.svg" alt="" style="left:0;top:0">
-              </div>
-            </div>
-            <div class="cell-center">
-              <p class="todo-headline">FDC unload support</p>
-              <p class="todo-body">Focus on custom blocks A12-A16</p>
-              <p class="todo-caption">2 hr</p>
-            </div>
-            <div class="chevron-24"><img src="assets/chevron-24.svg" alt=""></div>
-          </div>
-
-          <div class="sp-12"></div>
-        </section>
-
+    <!-- ================= Intro ================= -->
+    <header class="intro">
+      <img class="sketch-lines" src="assets/sketch-lines.svg" alt="Ellie Yan sketch logo">
+      <h1 class="intro-headline">I’m Ellie, a product designer crafting 0→1 digital experiences.</h1>
+      <div class="intro-bio">
+        <p>Currently, I shape enterprise tools that 400k+ <a class="u scroll-link" href="#task-management">Target</a> team members rely on every day.</p>
+        <p>Previously, I’ve designed at <a class="u scroll-link" href="#culture-walk">Google</a> and conducted HCI research at <a class="u scroll-link" href="#nyc-digital-twins">Cornell Tech</a>.</p>
       </div>
+      <nav class="intro-links">
+        <a href="assets/ellie-yan-resume-august-2026.pdf" target="_blank" rel="noopener">Resume</a>
+        <a href="mailto:ellieyann0413@gmail.com">Contact</a>
+      </nav>
+    </header>
 
-      <div class="col-b">
+    <!-- ================= Projects ================= -->
+    <main>
 
-        <!-- Team member status card -->
-        <section class="card">
-          <div class="sp-12"></div>
-
-          <div class="cell tm-header">
-            <div class="cell-leading">
-              <div class="tm-avatar"><img src="assets/avatar-ellie-lg.png" alt="Ellie Yan avatar"></div>
-            </div>
-            <div class="cell-center">
-              <p class="cell-headline" style="font-weight:700;font-size:16px;line-height:20px">Ellie Yan</p>
-              <p class="cell-body" style="color:var(--text-primary)">Team member</p>
-            </div>
-            <div class="cell-trailing">
-              <div class="tag">
-                <div class="icon-stack" style="width:16px;height:16px">
-                  <img src="assets/icon-onduty.svg" alt="" style="left:1.33px;top:0.67px">
-                </div>
-                <span class="tag-label">On duty</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="stepper">
-            <div class="stepper-steps">
-              <div class="step"><div class="step-fill"></div></div>
-              <div class="step"><div class="step-fill"></div></div>
-              <div class="step"><div class="step-fill" style="width:58.78%"></div></div>
-              <div class="step"></div>
-              <div class="step"></div>
-            </div>
-            <p class="stepper-label">Working on: Pull dairy</p>
-          </div>
-
-          <div class="sp-12"></div>
-
-          <div class="stat-row">
-            <div class="stat-box"><p class="stat-label">Shift</p><p class="stat-value">8am-4pm</p></div>
-            <div class="stat-box"><p class="stat-label">:30 break</p><p class="stat-value">1pm</p></div>
-            <div class="stat-box warning"><p class="stat-label">Trainings due</p><p class="stat-value">2</p></div>
-          </div>
-
-          <div class="sp-24"></div>
-        </section>
-
-        <!-- Create task card -->
-        <section class="card create-card">
-          <div class="sp-4"></div>
-
-          <div class="cell create-header">
-            <div class="cell-center"><h2 class="cell-headline-md">Create task</h2></div>
-          </div>
-
-          <div class="cell task-row">
-            <div class="cell-leading">
-              <div class="icon-stack clip" style="width:32px;height:32px;margin:0 2px">
-                <img src="assets/icon-food-order.svg" alt="" style="left:2.13px;top:2.35px">
-              </div>
-            </div>
-            <div class="cell-center">
-              <p class="task-title">Pull groceries</p>
-              <p class="task-sub">Goal 50 DPCI per hour</p>
-            </div>
-            <div class="checkbox"><img src="assets/checkbox-checked.svg" alt="Selected"></div>
-          </div>
-
-          <div class="chips">
-            <div class="chip">30 min</div>
-            <div class="chip">1 hr</div>
-            <div class="chip selected">
-              <span class="chip-check"><img src="assets/chip-check.svg" alt=""></span>
-              <span>1.5 hr</span>
-            </div>
-            <div class="chip">2 hrs</div>
-            <div class="chip">2.5 hrs</div>
-            <div class="chip">3 hr</div>
-            <div class="chip">3.5 hr</div>
-            <div class="chip">4 hr</div>
-          </div>
-
-          <div class="cell task-row">
-            <div class="cell-leading">
-              <div class="icon-stack clip" style="width:32px;height:32px;margin:0 2px">
-                <img src="assets/clean-spray.svg"  alt="" style="left:9.39px;top:8.05px;transform:rotate(90deg)">
-                <img src="assets/clean-bottle.svg" alt="" style="left:9.33px;top:2.67px">
-              </div>
-            </div>
-            <div class="cell-center">
-              <p class="task-title">Zone dairy</p>
-              <p class="task-sub">End caps front and back</p>
-            </div>
-            <div class="checkbox"><img src="assets/checkbox-empty.svg" alt="Not selected"></div>
-          </div>
-
-          <div class="cell task-row">
-            <div class="cell-leading">
-              <div class="icon-stack clip" style="width:32px;height:32px;margin:0 2px">
-                <img src="assets/truck-back.svg"     alt="" style="left:2.67px;top:6.30px">
-                <img src="assets/truck-bullseye.svg" alt="" style="left:6.79px;top:10.42px">
-                <img src="assets/truck-front.svg"    alt="" style="left:19.03px;top:12.97px">
-                <img src="assets/truck-window.svg"   alt="" style="left:20.85px;top:14.78px">
-                <img src="assets/truck-wheels.svg"   alt="" style="left:5.70px;top:20.55px">
-              </div>
-            </div>
-            <div class="cell-center">
-              <p class="task-title">RDC truck unload</p>
-              <p class="task-sub">Work out shoe metro</p>
-            </div>
-            <div class="checkbox"><img src="assets/checkbox-empty.svg" alt="Not selected"></div>
-          </div>
-
-          <div class="cell task-row">
-            <div class="cell-leading">
-              <div class="icon-stack clip" style="width:32px;height:32px;margin:0 2px">
-                <img src="assets/lamp-shade.svg"         alt="" style="left:4px;top:2.67px">
-                <img src="assets/lamp-base.svg"          alt="" style="left:7.28px;top:14.96px">
-                <img src="assets/lamp-base-shadow.svg"   alt="" style="left:9.29px;top:14.96px">
-                <img src="assets/plant-leaves-dark.svg"  alt="" style="left:16.24px;top:18.35px">
-                <img src="assets/plant-leaves-light.svg" alt="" style="left:17.18px;top:20.15px">
-                <img src="assets/plant-base.svg"         alt="" style="left:16px;top:23.78px">
-                <img src="assets/plant-base-bottom.svg"  alt="" style="left:16.35px;top:27.69px">
-              </div>
-            </div>
-            <div class="cell-center">
-              <p class="task-title">Fill home</p>
-              <p class="task-sub">Zone as you go</p>
-            </div>
-            <div class="checkbox"><img src="assets/checkbox-empty.svg" alt="Not selected"></div>
-          </div>
-
-          <div class="button-layout">
-            <button class="btn-primary" type="button">Add tasks</button>
-          </div>
-        </section>
-
-      </div>
-
-    </div>
-    </section>
-
-    <!-- View 1: Inclusive, delightful avatars (Figma node 4171:56507) -->
-    <section class="view" id="view-avatars">
-    <div class="avatar-grid">
-      <div class="avatar-col" style="width:236px">
-        <div class="panel" style="width:236px;height:373px">
-          <img src="assets/panel-accessories.png" alt="Avatar accessories: glasses, hats, and face masks" style="width:251.5px;height:389px">
+      <!-- Figma node 4204:105108 -->
+      <section class="project band" id="task-management">
+        <div class="project-info">
+          <img class="project-icon" src="assets/icon-section-target.svg" alt="Target" width="59" height="58.99">
+          <h2>Task Management</h2>
+          <p>Flexible workload management for Target store leaders</p>
         </div>
-        <div class="panel" style="width:235px;height:364px">
-          <img src="assets/panel-heads.png" alt="Avatar heads in a range of skin tones" style="width:251px;height:380px">
-        </div>
-      </div>
-      <div class="avatar-col" style="width:290px">
-        <div class="panel" style="width:288px;height:382px">
-          <img src="assets/panel-hairstyles.png" alt="Avatar hairstyle options" style="width:304px;height:398px">
-        </div>
-        <div class="panel" style="width:290px;height:99px">
-          <img src="assets/panel-hairbase.png" alt="Hair color palette swatches" style="width:305.5px;height:115px">
-        </div>
-        <div class="panel" style="width:290px;height:214px">
-          <img src="assets/panel-shirts.png" alt="Team member shirt options" style="width:305.5px;height:230px">
-        </div>
-      </div>
-    </div>
-    </section>
+        <div class="project-scene"><div class="scene-track">
+          <img class="project-graphic g-tasks" src="assets/panel-tasks.png"
+               alt="myDay app screens: team overview with task progress, and a create-task flow">
+        </div></div>
+      </section>
 
-    <!-- View 2: Cultural exploration in Maps (Figma node 4180:60712) -->
-    <section class="view" id="view-maps">
-    <div class="maps-grid">
-      <div class="panel" style="width:352px;height:590px">
-        <img src="assets/panel-maps-ar.png" alt="Google Maps AR street view highlighting Pisillo Italian Panini" style="width:364px;height:602px">
-      </div>
-      <div class="maps-col">
-        <div class="panel" style="width:289px;height:372px">
-          <img src="assets/panel-maps-card.png" alt="Maps place card for Pisillo Italian Panini with story and photos" style="width:301px;height:384px">
+      <!-- Figma node 4229:83975 -->
+      <section class="project" id="avatars">
+        <div class="project-info">
+          <img class="project-icon" src="assets/icon-section-target.svg" alt="Target" width="59" height="58.99">
+          <h2>Avatars</h2>
+          <p>Inclusive and delightful digital identities for team members</p>
         </div>
-        <div class="panel" style="width:289px;height:170px">
-          <img src="assets/panel-maps-settings.png" alt="Maps exploration category selection: art, food, nature, architecture, hidden gems, local stories" style="width:300px;height:182px">
+        <div class="project-scene"><div class="scene-track">
+          <img class="project-graphic g-avatars" src="assets/panel-avatars.png"
+               alt="Avatar customization screens: skin, hair, face and shirt options, and a personalized profile">
+        </div></div>
+      </section>
+
+      <!-- Figma node 4229:84868 -->
+      <section class="project band" id="culture-walk">
+        <div class="project-info">
+          <img class="project-icon project-icon--google" src="assets/icon-section-google.svg" alt="Google" width="59" height="60.21">
+          <h2>Culture Walk</h2>
+          <p>Cultural discovery for citygoers, built into Google Maps</p>
         </div>
-      </div>
-    </div>
-    </section>
+        <div class="project-scene"><div class="scene-track">
+          <img class="project-graphic g-culture" src="assets/panel-culture.png"
+               alt="Google Maps AR street view and a place card telling the story of Pisillo Italian Panini">
+        </div></div>
+      </section>
 
-    <!-- View 3: Digital twins for self-driving cars (Figma node 4180:62115) -->
-    <section class="view" id="view-cornell">
-    <div class="ct-col">
-      <img src="assets/panel-ct-vr.png" alt="Driving simulator editor with side-by-side scene and camera views" width="450" height="238">
-      <img src="assets/panel-ct-view.png" alt="Simulated street-level view of a digital-twin NYC intersection" width="450" height="237">
-      <img src="assets/panel-ct-nyc.png" alt="3D digital-twin model of the New York City skyline" width="450" height="269">
-    </div>
-    </section>
+      <!-- Figma node 4229:85400 -->
+      <section class="project" id="nyc-digital-twins">
+        <div class="project-info">
+          <img class="project-icon project-icon--cornell" src="assets/icon-section-cornell.svg" alt="Cornell Tech" width="46.21" height="59">
+          <h2>NYC Digital Twins</h2>
+          <p>Studying AV-pedestrian interactions in a safe and controlled environment</p>
+        </div>
+        <div class="project-scene"><div class="scene-track">
+          <img class="project-graphic g-laptop" src="assets/panel-cornell-laptop.png"
+               alt="Laptop running a digital-twin driving simulator of a New York City street">
+          <img class="project-graphic g-oculus" src="assets/panel-oculus.png"
+               alt="Oculus VR headset">
+        </div></div>
+      </section>
 
-  </main>
+    </main>
 
-  <!-- ================= Footer nav ================= -->
-  <footer class="footer">
-    <nav class="footer-logos">
-      <a class="logo-btn" href="#tasks" data-view="0" aria-label="Target — Modernizing task management"><img src="assets/logo-target.svg" alt=""></a>
-      <a class="logo-btn dimmed" href="#avatars" data-view="1" aria-label="Target — Inclusive, delightful avatars"><img src="assets/logo-target-2.svg" alt=""></a>
-      <a class="logo-btn dimmed" href="#maps" data-view="2" aria-label="Google — Cultural exploration in Maps"><img src="assets/logo-google.svg" alt=""></a>
-      <a class="logo-btn dimmed" href="#cornell" data-view="3" aria-label="Cornell Tech — Digital twins for self-driving cars"><img src="assets/logo-cornell.svg" alt="" style="margin-left:2px;width:12.53px"></a>
-    </nav>
-    <p class="footer-title">Modernizing task management at Target</p>
-  </footer>
+    <!-- ================= Footer ================= -->
+    <footer class="footer">
+      <img class="sketch-lines" src="assets/sketch-lines.svg" alt="Ellie Yan sketch logo">
+      <nav class="footer-links">
+        <a href="mailto:ellieyann0413@gmail.com">Contact</a>
+        <a href="https://www.linkedin.com/in/ellieeyann/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="assets/ellie-yan-resume-august-2026.pdf" target="_blank" rel="noopener">Resume</a>
+      </nav>
+    </footer>
 
   </div>
 
   <script>
-    // Single-page project switcher. The header and footer logo nav stay
-    // fixed; the canvas panel animates. Moving forward, the leaving view
-    // slides up + fades out while the entering view slides in from below
-    // + fades in; moving back, the directions mirror. The footer title
-    // crossfades to the incoming project's name.
-    // Scroll down → next project, scroll up → previous. Logos click to jump.
+    // On desktop the page is laid out at the design's native 1728px width
+    // and zoomed as one unit so every window size shows the same
+    // proportions (zoom, unlike transform, keeps scroll height in sync).
+    // Below the mobile breakpoint the layout reflows instead, so the zoom
+    // is dropped — scaling 1728px down to a phone would be unreadable.
     (function () {
-      var views = Array.prototype.slice.call(document.querySelectorAll('.view'));
-      var rows = Array.prototype.slice.call(document.querySelectorAll('.logo-btn[data-view]'));
-      var title = document.querySelector('.footer-title');
-      var titles = [
-        'Modernizing task management at Target',
-        'Inclusive, delightful avatars at Target',
-        'Cultural exploration in Maps at Google',
-        'Digital twins for self-driving cars at Cornell Tech'
-      ];
-      var current = 0;
-      var locked = false;
-
-      // Scale the whole page as one unit so the layout keeps the
-      // design's proportions (1728×997 artboard) at any window size.
-      function fitPage() {
-        var scale = Math.min(window.innerWidth / 1728, window.innerHeight / 997);
-        document.documentElement.style.setProperty('--page-scale', scale);
+      var MOBILE = 900;
+      function fit() {
+        var w = document.documentElement.clientWidth;
+        document.body.style.zoom = w <= MOBILE ? '' : w / 1728;
       }
-      window.addEventListener('resize', fitPage);
-      fitPage();
+      window.addEventListener('resize', fit);
+      fit();
+    })();
 
-      function reflow(el) { void el.offsetWidth; }
+    // Glass-lens cursor riding the pointer 1:1 (ported from the
+    // deployed site). Appended to <html>, not <body>, so the body
+    // zoom doesn't scale the dot or skew its tracking.
+    (function () {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-      function resetOffsets(el) {
-        el.classList.add('no-anim');
-        el.classList.remove('offset-up', 'offset-down');
-        reflow(el);
-        el.classList.remove('no-anim');
-      }
+      var dot = document.createElement('div');
+      dot.className = 'cursor-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      document.documentElement.appendChild(dot);
+      document.documentElement.classList.add('custom-cursor');
 
-      function show(i, instant) {
-        if (i === current || i < 0 || i >= views.length) return;
-        var leaving = views[current];
-        var entering = views[i];
-        var forward = i > current;
+      var CLICKABLE = 'a, button, [role="button"], input, select, textarea, label';
 
-        if (instant) {
-          leaving.classList.remove('is-active');
-          entering.classList.add('is-active');
-        } else {
-          // Leaving view: fade out while sliding away
-          leaving.classList.remove('is-active');
-          leaving.classList.add(forward ? 'offset-up' : 'offset-down');
-          setTimeout(function () { resetOffsets(leaving); }, 600);
-
-          // Entering view: start offset without animating, then
-          // transition to resting position while fading in
-          entering.classList.add('no-anim', forward ? 'offset-down' : 'offset-up');
-          reflow(entering);
-          entering.classList.remove('no-anim');
-          entering.classList.remove('offset-up', 'offset-down');
-          entering.classList.add('is-active');
-        }
-
-        rows.forEach(function (row) {
-          row.classList.toggle('dimmed', Number(row.dataset.view) !== i);
-        });
-
-        if (instant) {
-          title.textContent = titles[i];
-        } else {
-          title.classList.add('fading');
-          setTimeout(function () {
-            title.textContent = titles[i];
-            title.classList.remove('fading');
-          }, 250);
-        }
-        current = i;
-      }
-
-      rows.forEach(function (row) {
-        row.addEventListener('click', function (e) {
-          e.preventDefault();
-          show(Number(row.dataset.view));
-        });
-      });
-
-      // Lock briefly after each switch so one touchpad gesture
-      // (many wheel events + momentum) advances a single view.
-      window.addEventListener('wheel', function (e) {
-        if (locked || Math.abs(e.deltaY) < 10) return;
-        var next = current + (e.deltaY > 0 ? 1 : -1);
-        if (next < 0 || next >= views.length) return;
-        locked = true;
-        show(next);
-        setTimeout(function () { locked = false; }, 900);
+      window.addEventListener('pointermove', function (e) {
+        dot.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+        dot.classList.add('on');
+        var hit = e.target && e.target.closest ? e.target.closest(CLICKABLE) : null;
+        dot.classList.toggle('link', !!hit);
       }, { passive: true });
 
-      var initial = { '#avatars': 1, '#maps': 2, '#cornell': 3 }[window.location.hash];
-      if (initial) show(initial, true);
+      window.addEventListener('pointerdown', function () { dot.classList.add('down'); });
+      window.addEventListener('pointerup',   function () { dot.classList.remove('down'); });
+
+      // Hide the dot when the pointer leaves the window
+      document.documentElement.addEventListener('mouseleave', function () { dot.classList.remove('on'); });
+      document.documentElement.addEventListener('mouseenter', function () { dot.classList.add('on'); });
+    })();
+
+    // Bio links scroll to their project section (scrollIntoView stays
+    // correct under the body zoom, unlike native anchor jumps)
+    document.querySelectorAll('.scroll-link').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(link.getAttribute('href'))
+          .scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Scroll reveals (skipped for prefers-reduced-motion via the CSS gate):
+    //   .in-view    — set once, the first time a section appears. Drives the
+    //                 project text, which settles in and then stays put.
+    //   .on-screen  — toggled, so the graphics rise from the bottom again
+    //                 every time their section is scrolled back to.
+    // The two thresholds give the toggle hysteresis: a section has to be a
+    // quarter visible to arrive and all but gone to leave, so a graphic
+    // parked near the edge of the viewport can't flicker.
+    (function () {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.intersectionRatio >= 0.25) {
+            entry.target.classList.add('in-view', 'on-screen');
+          } else if (entry.intersectionRatio <= 0.02) {
+            entry.target.classList.remove('on-screen');
+          }
+        });
+      }, { threshold: [0, 0.02, 0.25] });
+      document.querySelectorAll('.project').forEach(function (el) {
+        observer.observe(el);
+      });
     })();
   </script>
 

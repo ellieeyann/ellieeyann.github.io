@@ -1,21 +1,12 @@
 /* ============================================================
-   Ellie's Journey — Home, centered layout
-   Design source: Figma node 4200:66503
+   Ellie's Journey — Home, scrolling page
+   Design source: Figma node 4204:105105 (1728×3675 artboard)
    ============================================================ */
 
 @font-face {
   font-family: 'TWK Lausanne';
   src: url('fonts/twk_lausanne/TWKLausanne-150.otf') format('opentype');
   font-weight: 150;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TWK Lausanne';
-  src: url('fonts/twk_lausanne/TWKLausanne-200.woff2') format('woff2'),
-       url('fonts/twk_lausanne/TWKLausanne-200.otf') format('opentype');
-  font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
@@ -30,668 +21,423 @@
 }
 
 :root {
-  /* Design tokens (Figma variables) */
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-link: #366CD9;
-  --text-success: #008500;
-  --text-inverse: #FFFFFF;
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F7F7F7;
-  --bg-page: #F8F8F8;
-  --bg-disabled: #D6D6D6;
-  --bg-in-progress: #366CD9;
-  --bg-warning-subdued: #FFF4EB;
-  --bg-warning: #B85300;
-  --border-default: #888888;
-  --border-success: #00A200;
-  --icon-success: #00A200;
-  --target-red: #CC0000;
-  --grey-light: #E9E9E9;
-  --text-intro: #3A3A3A;
+  --text-primary: #000000;
+  --bg-page: #FFFFFF;
+  --bg-band: #F8F8F8;
 
   --font-display: 'TWK Lausanne', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-ui: 'Helvetica for Target', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
-  --shadow-medium:
-    0 -1px 6px rgba(0, 0, 0, 0.02),
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 3px 5px rgba(0, 0, 0, 0.04),
-    0 4px 6px rgba(0, 0, 0, 0.04);
 }
 
 * { box-sizing: border-box; }
 
-/* Custom cursor: small black circle (18px, hotspot centered),
-   applied everywhere so links/buttons don't swap back to defaults */
-* {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='9' fill='%23000'/%3E%3C/svg%3E") 9 9, auto;
+/* ---------------- Custom cursor ---------------- */
+/* Glass lens riding the pointer 1:1 (ported from the deployed site).
+   Only on precise hover devices; the script tags <html> with
+   .custom-cursor once the dot exists, so without JS the native
+   cursor is untouched. */
+
+@media (hover: hover) and (pointer: fine) {
+  .custom-cursor, .custom-cursor * { cursor: none !important; }
 }
 
-/* The page never physically scrolls — wheel input only switches
-   project views, so the left intro panel stays fixed in place. */
-html, body {
-  height: 100%;
-  overflow: hidden;
-  overscroll-behavior: none;
+/* The dot is appended to <html>, outside the zoomed <body>, so
+   pointer coordinates map to it without zoom compensation */
+.cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border-radius: 50%;
+  /* Clear glass lens: transparent centre, one rim-light that fades
+     smoothly into the border (a single ring, no nested circles), a
+     light refracting blur underneath and a soft lift */
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0) 70%,
+      rgba(255, 255, 255, 0.30) 100%);
+  backdrop-filter: blur(1.5px) saturate(1.6) brightness(1.03);
+  -webkit-backdrop-filter: blur(1.5px) saturate(1.6) brightness(1.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: width 0.2s ease, height 0.2s ease, margin 0.2s ease,
+              background-color 0.2s ease, border-color 0.2s ease,
+              box-shadow 0.2s ease, opacity 0.15s ease;
 }
+
+/* Translucency lives in the glass fill, so the element itself is solid */
+.cursor-dot.on { opacity: 1; }
+
+/* Over anything interactive the lens keeps its glass look and simply
+   swells, signalling "you can act here" */
+.cursor-dot.link {
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+}
+
+.cursor-dot.down { opacity: 0.7; }
 
 body {
   margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  font-family: var(--font-ui);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Single centered column: intro header, canvas panel, footer nav.
-   The column is laid out at the design's native size (746px wide on a
-   1728×997 artboard) and scaled as one unit to fit the viewport, so
-   every window size shows the same proportions. --page-scale is set
-   from JS on load/resize. */
-.page {
-  width: 746px;
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-  transform: scale(var(--page-scale, 1));
+/* Everything is laid out at the design's native 1728px width;
+   a JS-set body zoom scales the whole page to the viewport. */
+.page { width: 1728px; }
+
+/* Underlined words and links share the design's underline metrics */
+.u,
+.intro-links a,
+.footer-links a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  transition: color 0.2s ease;
 }
 
-/* ---------------- Intro header ---------------- */
+.u:hover,
+.intro-links a:hover,
+.footer-links a:hover {
+  color: #8A8A8A;
+}
 
+/* ---------------- Intro ---------------- */
+
+/* Narrower than the Figma artboard's 133px margins: the intro column
+   is pulled in (à la mikeleotta.com) and its type scaled down so the
+   first project band peeks above the fold. */
 .intro {
-  display: flex;
-  align-items: flex-start;
-  gap: 36px;
+  margin: 110px 300px 80px;
+  width: 1128px;
 }
 
-.sketch-lines {
-  width: 60.61px;
-  height: 67.58px;
+.intro .sketch-lines {
+  width: 79.83px;
+  height: 89.01px;
   display: block;
-  flex-shrink: 0;
+  margin-bottom: 12px;
 }
 
-.intro-text {
-  display: flex;
-  flex-direction: column;
-  gap: 14.3px;
-  color: var(--text-intro);
-  font-family: var(--font-display);
-}
-
+/* Sized to sit on a single line: the headline measures 27.03px wide per
+   1px of font size, so 41px fills 1108 of the column's 1128px. */
 .intro-headline {
   margin: 0;
-  font-size: 30.32px;
+  font-size: 41px;
   font-weight: 250; /* TWK Lausanne 250 */
-  letter-spacing: 0.3px;
+  letter-spacing: 0.01em;
   line-height: normal;
+  white-space: nowrap;
 }
 
 .intro-bio {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.intro-bio p {
   margin: 0;
-  font-size: 17.33px;
+  font-size: 26px;
   font-weight: 150; /* TWK Lausanne 150 */
-  letter-spacing: 0.17px;
   line-height: normal;
 }
 
-/* ---------------- Center canvas panel ---------------- */
+.intro-links {
+  margin-top: 36px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 20px;
+  font-weight: 150;
+  line-height: normal;
+}
 
-.canvas {
+/* ---------------- Projects ---------------- */
+
+/* Each project is a fixed 648px band; the card graphics are taller
+   than the band and crop off its bottom edge, so bands clip. */
+.project {
   position: relative;
-  width: 746px;
-  height: 548px;
-  border-radius: 6px;
-  background: var(--bg-page);
+  height: 648px;
   overflow: hidden;
 }
 
-/* Project views stack in the panel; only one is visible at a time.
-   The header and footer never animate — transitions are panel-only.
-   Leaving view slides up (or down when going back) while fading out;
-   entering view slides in from the opposite edge while fading in.
-   Each view's content keeps its original markup and is shrunk to fit
-   the panel with a per-view scale factor (the design renders the task
-   screens at ×0.733 of their source size). */
-.view {
+.band { background: var(--bg-band); }
+
+/* Info column left-aligns with the intro's 300px margin. Specs and
+   graphics rise up gently when the section first scrolls into view
+   (.in-view is set on the section); graphics trail the text slightly. */
+.project-info {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  left: 300px;
+  top: 268.6px;
+  width: 360px; /* keeps a clear gutter before the graphics at 716px */
+}
+
+/* Both rise from below and decelerate hard at the end — the long tail of
+   this curve is what reads as the piece "locking" into position rather
+   than coasting to a stop. The slight scale-up lands with it. */
+.project-info,
+.project-graphic {
   opacity: 0;
-  pointer-events: none;
-  transform: translateY(0);
-  transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
-              transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: translateY(28px) scale(0.985);
+  transition: opacity 0.55s ease-out,
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.view > * { transform: scale(var(--view-scale, 1)); }
+/* Graphics trail the text in */
+.project-graphic { transition-delay: 0.12s; }
 
-#view-tasks   { --view-scale: 0.733; }
-#view-avatars { --view-scale: 0.59; }
-#view-maps    { --view-scale: 0.76; }
-#view-cornell { --view-scale: 0.57; }
-
-.view.is-active {
+/* The text settles once (.in-view is never removed); the graphics are
+   keyed to .on-screen, which toggles, so they rise again on every return */
+.project.in-view .project-info,
+.project.on-screen .project-graphic {
   opacity: 1;
-  pointer-events: auto;
+  transform: translateY(0) scale(1);
 }
 
-/* Slide offsets — applied by the switcher script around a transition */
-.view.offset-up   { transform: translateY(-48px); }
-.view.offset-down { transform: translateY(48px); }
-.view.no-anim     { transition: none; }
+/* The mirrored headset keeps its flip through every animation state */
+.project .g-oculus { transform: translateY(28px) scale(0.985) scaleX(-1); }
+.project.on-screen .g-oculus { transform: scaleX(-1); }
 
-/* ---------------- Footer nav ---------------- */
+#culture-walk .project-info { top: 268px; }
+#nyc-digital-twins .project-info { top: 276.5px; }
+
+.project-icon {
+  display: block;
+  margin-bottom: 24px;
+}
+
+/* The Cornell glyph is narrower than the 59px icon box; keep it
+   centered where the box would be */
+.project-icon--cornell { margin-left: 6.4px; }
+
+.project-info h2 {
+  margin: 0 0 12px;
+  font-size: 36px;
+  font-weight: 250;
+  line-height: normal;
+}
+
+.project-info p {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 150;
+  line-height: normal;
+  text-wrap: balance; /* evens out the two description lines */
+}
+
+/* Graphics are baked Figma exports whose drop shadows bleed ~24px
+   past the node box, hence the negative offsets from the node
+   positions (tasks/avatars node: 821,99 · culture node: 820,99). */
+.project-graphic {
+  position: absolute;
+  display: block;
+}
+
+/* .project-scene / .scene-track wrap every graphic. They're inert here —
+   plain static divs establish no containing block, so the graphics still
+   position against .project — and only take on a role on mobile, where
+   they become the horizontal scroller and its track. */
+
+/* Graphics are pulled left so their visible right edge sits on the
+   intro's right margin (1728 − 300 = 1428). */
+.g-tasks,
+.g-avatars {
+  left: 716px;
+  top: 75px;
+  width: 736px;
+  height: 692px;
+}
+
+.g-culture {
+  left: 715px;
+  top: 75px;
+  width: 737px;
+  height: 691.5px;
+}
+
+/* Laptop + headset are scaled ×0.8515 about the headset's visible
+   left edge (677) and the band bottom (648) so the laptop's right
+   edge also lands on the 1428 margin */
+.g-laptop {
+  left: 763.4px;
+  top: 200.1px;
+  width: 679.1px;
+  height: 447.9px;
+}
+
+/* The Figma node mirrors its source photo, so the raw asset renders
+   flipped; mirror it back */
+.g-oculus {
+  left: 592.9px;
+  top: 427.9px;
+  width: 458.2px;
+  height: 238.9px;
+  transform: scaleX(-1);
+}
+
+/* ---------------- Footer ---------------- */
 
 .footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.footer-logos {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.logo-btn {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
-
-.logo-btn img { display: block; }
-
-.logo-btn.dimmed {
-  filter: grayscale(1);
-  opacity: 0.45;
-}
-
-.footer-title {
-  margin: 0;
-  color: var(--text-intro);
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 250; /* TWK Lausanne 250 */
-  letter-spacing: 0.16px;
-  line-height: normal;
-  white-space: nowrap;
-  transition: opacity 0.25s ease;
-}
-
-.footer-title.fading { opacity: 0; }
-
-.canvas-grid {
-  display: flex;
-  gap: 48px;
-}
-
-.col-a {
-  width: 360px;
+  margin: 220px 300px 160px;
+  width: 1128px;
   display: flex;
   flex-direction: column;
-  gap: 48px;
-}
-
-.col-b {
-  width: 360px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.card {
-  background: var(--bg-primary);
-  border-radius: 8px;
-  box-shadow: var(--shadow-medium);
-}
-
-/* Generic list cell: [leading] [center...] [trailing] */
-
-.cell {
-  display: flex;
   align-items: center;
-  padding: 11px 12px;
-  width: 100%;
 }
 
-.cell-leading {
+.footer .sketch-lines {
+  width: 79.83px;
+  height: 89.01px;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.footer-links {
   display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.cell-center {
-  flex: 1;
-  min-width: 1px;
-}
-
-.cell-trailing {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.cell-headline-lg {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 24px;
-  color: var(--text-primary);
-}
-
-.cell-headline {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 16px;
-  color: var(--text-primary);
-}
-
-.cell-body {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: normal;
-  color: var(--text-secondary);
-}
-
-/* Layered illustration icons (absolute-positioned Figma exports) */
-
-/* Each layer <img> keeps its natural SVG size and is placed by left/top */
-.icon-stack { position: relative; flex-shrink: 0; }
-.icon-stack img, .icon-stack .layer { position: absolute; display: block; }
-.clip { overflow: hidden; }
-
-/* Stat boxes (Data Row / work-area metrics) */
-
-.stat-row {
-  display: flex;
-  gap: 8px;
-  padding: 0 12px;
-  width: 100%;
-}
-
-.stat-box {
-  flex: 1;
-  min-width: 1px;
-  background: var(--bg-secondary);
-  border-radius: 4px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.stat-box.warning {
-  background: var(--bg-warning-subdued);
-  border: 2px solid var(--bg-warning);
-}
-
-.stat-label {
-  margin: 0;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--text-secondary);
-}
-
-.stat-value {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 16px;
-  color: var(--text-primary);
-}
-
-/* Progress bars */
-
-.progress-track {
-  height: 8px;
-  border-radius: 12px;
-  background: var(--bg-disabled);
-  position: relative;
-  overflow: hidden;
-}
-
-.progress-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  border-radius: 12px;
-  background: var(--icon-success);
-}
-
-/* ---------------- Team card ---------------- */
-
-.team-card { padding: 0; }
-
-.team-member-row .cell-center {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.member-avatar {
-  width: 36px;
-  height: 32px;
-  margin-right: 8px;
-}
-
-.member-avatar img { width: 100%; height: 100%; display: block; }
-
-.chevron-20 {
-  width: 20px;
-  height: 20px;
-  position: relative;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.chevron-20 img {
-  position: absolute;
-  width: 14.5px;
-  height: 8.43px;
-  left: calc(50% - 7.25px + 1.13px);
-  top: calc(50% - 4.22px);
-  transform: rotate(90deg);
-}
-
-/* ---------------- To-do card ---------------- */
-
-.todo-row { padding: 6px 12px; }
-
-.todo-row .cell-leading { padding-right: 12px; }
-
-.todo-headline {
-  margin: 0;
-  font-size: 16px;
-  line-height: 20px;
-  color: var(--text-primary);
-}
-
-.todo-body {
-  margin: 0;
-  font-size: 14px;
-  line-height: normal;
-  color: var(--text-primary);
-}
-
-.todo-caption {
-  margin: 2px 0 0;
-  font-size: 14px;
-  line-height: normal;
-  color: var(--text-secondary);
-}
-
-.see-all {
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--text-link);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.chevron-24 {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.chevron-24 img {
-  position: absolute;
-  left: 7.91px;
-  top: 3.47px;
-}
-
-/* ---------------- Team member (Ellie) card ---------------- */
-
-.tm-header { padding: 11px 12px; }
-
-.tm-avatar {
-  width: 42px;
-  height: 42px;
-  margin: 0 9px 0 4px;
-}
-
-.tm-avatar img { width: 100%; height: 100%; display: block; }
-
-.tag {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0 12px;
-  border-radius: 12px;
-  background: var(--bg-in-progress);
-}
-
-.tag-label {
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 20px;
-  letter-spacing: 0.2px;
-  text-transform: uppercase;
-  color: var(--text-inverse);
-  white-space: nowrap;
-}
-
-.stepper {
-  width: 336px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stepper-steps {
-  display: flex;
-  gap: 4px;
-}
-
-.step {
-  flex: 1;
-  min-width: 1px;
-  height: 8px;
-  border-radius: 12px;
-  background: var(--bg-disabled);
-  position: relative;
-  overflow: hidden;
-}
-
-.step .step-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 100%;
-  border-radius: 12px;
-  background: var(--icon-success);
-}
-
-.stepper-label {
-  margin: 0;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--text-secondary);
-}
-
-/* ---------------- Create task card ---------------- */
-
-.create-card { overflow: hidden; }
-
-.create-header { padding: 11px 12px; border-bottom: 1px solid var(--grey-light); }
-
-.create-header .cell-headline-md {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 20px;
-  color: var(--text-primary);
-}
-
-.task-row { padding: 11px 12px; }
-
-.task-row .cell-leading { padding-right: 12px; }
-
-.task-title {
-  margin: 0;
-  font-size: 14px;
-  line-height: 16px;
-  color: var(--text-primary);
-}
-
-.task-sub {
-  margin: 0;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--text-secondary);
-}
-
-.checkbox {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.checkbox img {
-  position: absolute;
-  left: 3px;
-  top: 3px;
-}
-
-.chips {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-left: 12px;
-  margin-bottom: 8px;
-}
-
-.chip {
-  display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  gap: 2px;
-  height: 32px;
-  padding: 4px 8px;
-  border: 1px solid var(--border-default);
-  border-radius: 4px;
-  background: var(--bg-primary);
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.chip.selected {
-  border-color: var(--border-success);
-  color: var(--text-success);
-}
-
-.chip-check {
-  width: 16px;
-  height: 16px;
-  position: relative;
-}
-
-.chip-check img {
-  position: absolute;
-  width: 11.6px;
-  height: 8.75px;
-  left: calc(50% - 5.8px);
-  top: calc(50% - 4.47px);
-}
-
-.button-layout { padding: 12px; }
-
-.btn-primary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 40px;
-  padding: 0 16px;
-  border: none;
-  border-radius: 4px;
-  background: var(--target-red);
-  color: var(--text-inverse);
-  font-family: var(--font-ui);
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 20px;
-  cursor: pointer;
-}
-
-/* Spacers matching Figma spacer components */
-.sp-4  { height: 4px; }
-.sp-8  { height: 8px; }
-.sp-12 { height: 12px; }
-.sp-24 { height: 24px; }
-
-/* ---------------- Avatars project page ---------------- */
-/* Design source: Figma node 4171:56507 */
-
-.avatar-grid {
-  display: flex;
   gap: 36px;
+  font-size: 26px; /* matches the intro bio text */
+  font-weight: 150;
+  line-height: normal;
 }
 
-.avatar-col {
-  height: 765px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+/* ---------------- Mobile ---------------- */
+
+/* Below this width the 1728px design can't be scaled to fit and stay
+   legible, so the script drops the page zoom (see index.html) and the
+   layout reflows into a single column: type at native sizes and the
+   project graphics blown up edge to edge. */
+@media (max-width: 900px) {
+  .page { width: 100%; }
+
+  .intro {
+    margin: 56px 48px 56px;
+    width: auto;
+  }
+
+  .intro .sketch-lines,
+  .footer .sketch-lines {
+    width: 60px;
+    height: 66.9px;
+  }
+
+  .intro-headline {
+    font-size: 30px;
+    white-space: normal; /* the one-line fit is a desktop-column trick */
+  }
+
+  .intro-bio { margin-top: 24px; gap: 10px; }
+  .intro-bio p { font-size: 18px; }
+  .intro-links { margin-top: 28px; gap: 20px; font-size: 16px; }
+
+  /* Bands grow with their contents. No bottom padding: the band edge has
+     to land exactly on the graphic's crop line, the way it does on
+     desktop, rather than leaving a strip of background below it. */
+  .project {
+    height: auto;
+    overflow: visible;
+    padding: 48px 48px 0;
+  }
+
+  .project-info,
+  #culture-walk .project-info,
+  #nyc-digital-twins .project-info {
+    position: static;
+    width: auto;
+  }
+
+  .project-icon,
+  .project-icon--cornell {
+    width: auto;
+    height: 44px;
+    margin: 0 0 16px;
+  }
+
+  .project-info h2 { font-size: 26px; margin-bottom: 8px; }
+  .project-info p { font-size: 18px; text-wrap: normal; }
+
+  /* Shrinking a two-phone panel to fit leaves each phone unreadable, so
+     the graphics stay magnified and the scene is a horizontal scroller.
+     It starts on the text's 48px gutter but runs off the right edge of
+     the screen, so graphics travel in and out of the screen border as
+     you swipe instead of stopping short at a margin. */
+  .project-scene {
+    width: calc(100% + 48px);
+    margin: 28px -48px 0 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .project-scene::-webkit-scrollbar { display: none; }
+
+  /* The track carries the crop. On desktop each graphic is taller than
+     its 648px band and runs off the bottom edge; these ratios are that
+     same visible slice — the panels sit 75px into the band and so show
+     573 of their 692px — so the phones are cut off at exactly the point
+     they are on the web version. overflow:hidden is also what lets
+     aspect-ratio win over the image's own height.
+     620px keeps each phone around 285px wide, close to how big they
+     render on a laptop; wider screens just use their own width. */
+  .scene-track {
+    width: max(100%, 620px);
+    aspect-ratio: 736 / 573;
+    overflow: hidden;
+  }
+
+  #culture-walk .scene-track { aspect-ratio: 737 / 573; }
+
+  .project-graphic {
+    position: static;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+
+  /* The laptop and headset have to keep their overlap, so their track is
+     the pair's combined bounding box from the desktop layout (849.6 wide),
+     cropped to the 447.9 of its 466.7 height that clears the band bottom —
+     which trims the headset exactly as the web version does. Each graphic
+     sits in it as a percentage of that cropped box. */
+  #nyc-digital-twins .scene-track {
+    position: relative;
+    aspect-ratio: 849.6 / 447.9;
+  }
+
+  #nyc-digital-twins .project-graphic { position: absolute; }
+  #nyc-digital-twins .g-laptop { left: 20.07%; top: 0; width: 79.93%; }
+  #nyc-digital-twins .g-oculus { left: 0; top: 50.86%; width: 53.93%; }
+
+  .footer {
+    margin: 88px 48px 72px;
+    width: auto;
+  }
+
+  .footer-links { gap: 24px; font-size: 18px; }
 }
-
-/* Panel exports carry baked-in drop shadows that bleed past the node
-   box, so each image is centered oversize inside an exact-size frame */
-.panel { position: relative; }
-
-.panel img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* ---------------- Maps project view ---------------- */
-/* Design source: Figma node 4180:60712 */
-
-.maps-grid {
-  display: flex;
-  align-items: center;
-  gap: 48px;
-}
-
-.maps-col {
-  width: 289px;
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-}
-
-/* ---------------- Cornell Tech project view ---------------- */
-/* Design source: Figma node 4180:62115 */
-
-.ct-col {
-  width: 450px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.ct-col img { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
-  .view { transition: none; }
-  .view.offset-up, .view.offset-down { transform: none; }
+  html { scroll-behavior: auto; }
+  .project-info,
+  .project-graphic {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .project .g-oculus { transform: scaleX(-1); }
 }
-
