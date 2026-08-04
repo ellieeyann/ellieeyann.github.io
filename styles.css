@@ -375,6 +375,8 @@ body {
      the screen, so graphics travel in and out of the screen border as
      you swipe instead of stopping short at a margin. */
   .project-scene {
+    display: flex;
+    align-items: flex-start;
     width: calc(100% + 48px);
     margin: 28px -48px 0 0;
     overflow-x: auto;
@@ -386,6 +388,19 @@ body {
 
   .project-scene::-webkit-scrollbar { display: none; }
 
+  /* Trailing spacer, so swiping to the end of a scene leaves the same
+     48px gutter on the right that the text starts on. It lives inside
+     the scrolled content rather than on the container, so it costs
+     nothing at rest — the graphics still bleed off the right edge until
+     you actually reach the end. (A pseudo-element instead of the
+     container's padding-right, which browsers disagree about counting
+     towards scrollable overflow.) */
+  .project-scene::after {
+    content: '';
+    flex: 0 0 48px;
+    align-self: stretch;
+  }
+
   /* The track carries the crop. On desktop each graphic is taller than
      its 648px band and runs off the bottom edge; these ratios are that
      same visible slice — the panels sit 75px into the band and so show
@@ -395,6 +410,7 @@ body {
      620px keeps each phone around 285px wide, close to how big they
      render on a laptop; wider screens just use their own width. */
   .scene-track {
+    flex: none; /* the track sets the scroll width; it must not shrink to fit */
     width: max(100%, 620px);
     aspect-ratio: 736 / 573;
     overflow: hidden;
