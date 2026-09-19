@@ -56,7 +56,7 @@ export default function Resume() {
         <Section label="Design Experience">
           <Role
             org="Target"
-            role="Product Designer"
+            role="Senior Product Designer"
             meta="Jun 2024 – Present · Minneapolis, MN"
             bullets={[
               "Spearheaded end-to-end web and mobile design and product launch for Digital Task Assignments, a 0→1 system bringing structured task management to 400k+ employees across 2,000 Target stores",
