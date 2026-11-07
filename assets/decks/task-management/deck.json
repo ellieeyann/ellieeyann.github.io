@@ -1,0 +1,11 @@
+{
+  "title": "Task Management: Case Study",
+  "count": 31,
+  "ext": "bin",
+  "kdf": {
+    "name": "PBKDF2",
+    "hash": "SHA-256",
+    "iterations": 600000,
+    "salt": "nWCbARSYRf38t5ksidPHKA=="
+  }
+}

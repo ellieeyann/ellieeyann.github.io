@@ -29,10 +29,10 @@
     <main>
 
       <!-- Figma node 4204:105108 -->
-      <section class="project band" id="task-management">
+      <section class="project band" id="task-management" data-deck="task-management">
         <div class="project-info">
           <img class="project-icon" src="assets/icon-section-target.svg" alt="Target" width="59" height="58.99">
-          <h2>Task Management</h2>
+          <h2><a class="deck-link" href="#deck=task-management">Task Management</a></h2>
           <p>Flexible workload management for Target store leaders</p>
         </div>
         <div class="project-scene"><div class="scene-track">
@@ -47,6 +47,19 @@
           <img class="project-icon" src="assets/icon-section-target.svg" alt="Target" width="59" height="58.99">
           <h2>Avatars</h2>
           <p>Inclusive and delightful digital identities for team members</p>
+          <a class="tiktok-link" href="https://www.tiktok.com/@kaitlinsonday/video/7675523873265224974"
+             target="_blank" rel="noopener" aria-label="As seen on TikTok (opens in a new tab)">
+            As seen on
+            <span class="tiktok-logo">
+              <!-- TikTok glyph: the note drawn three times, cyan and red offsets under black -->
+              <svg viewBox="-1 -1 26 26" aria-hidden="true">
+                <defs><path id="tiktok-note" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></defs>
+                <use href="#tiktok-note" fill="#25F4EE" x="-0.55" y="-0.55"/>
+                <use href="#tiktok-note" fill="#FE2C55" x="0.55" y="0.55"/>
+                <use href="#tiktok-note" fill="#000000"/>
+              </svg>
+            </span>
+          </a>
         </div>
         <div class="project-scene"><div class="scene-track">
           <img class="project-graphic g-avatars" src="assets/panel-avatars.png"
@@ -55,10 +68,10 @@
       </section>
 
       <!-- Figma node 4229:84868 -->
-      <section class="project band" id="culture-walk">
+      <section class="project band" id="culture-walk" data-deck="culture-walk">
         <div class="project-info">
           <img class="project-icon project-icon--google" src="assets/icon-section-google.svg" alt="Google" width="59" height="60.21">
-          <h2>Culture Walk</h2>
+          <h2><a class="deck-link" href="#deck=culture-walk">Culture Walk</a></h2>
           <p>Cultural discovery for citygoers, built into Google Maps</p>
         </div>
         <div class="project-scene"><div class="scene-track">
@@ -96,6 +109,42 @@
 
   </div>
 
+  <!-- ================= Deck viewer ================= -->
+  <!-- Opened by #deck=<slug> links; slides live in assets/decks/<slug>/ -->
+  <div class="deck" id="deck" role="dialog" aria-modal="true" aria-labelledby="deck-title" hidden>
+    <header class="deck-bar">
+      <button class="deck-back" type="button" aria-label="Back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+      <h2 class="deck-title" id="deck-title"></h2>
+    </header>
+    <form class="deck-lock" hidden>
+      <p>This deck is password protected.</p>
+      <div class="deck-lock-row">
+        <input class="deck-password" type="password" autocomplete="current-password"
+               aria-label="Password" placeholder="Password">
+        <button class="deck-unlock" type="submit">Unlock</button>
+      </div>
+      <p class="deck-error" role="alert"></p>
+    </form>
+    <div class="deck-stage" hidden>
+      <div class="deck-frame">
+        <img class="deck-slide" alt=""><img class="deck-slide" alt="">
+        <div class="deck-progress" role="progressbar" aria-label="Deck progress" aria-valuemin="1">
+          <div class="deck-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+    <footer class="deck-controls" hidden>
+      <button class="deck-prev" type="button" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+      <button class="deck-next" type="button" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5 16.5 12 9 19.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+    </footer>
+  </div>
+
   <script>
     // On desktop the page is laid out at the design's native 1728px width
     // and zoomed as one unit so every window size shows the same
@@ -124,7 +173,7 @@
       document.documentElement.appendChild(dot);
       document.documentElement.classList.add('custom-cursor');
 
-      var CLICKABLE = 'a, button, [role="button"], input, select, textarea, label';
+      var CLICKABLE = 'a, button, [role="button"], input, select, textarea, label, [data-deck]';
 
       window.addEventListener('pointermove', function (e) {
         dot.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
@@ -172,6 +221,395 @@
       document.querySelectorAll('.project').forEach(function (el) {
         observer.observe(el);
       });
+    })();
+
+    // Deck viewer. The URL hash is the source of truth: #deck=<slug>
+    // opens a deck (with &slide=<n> kept current so links can be shared
+    // mid-deck), and clearing it closes the viewer — so the back button
+    // closes it too. Like the cursor dot, the overlay is moved onto
+    // <html> so the body zoom doesn't scale it.
+    //
+    // Protected decks are AES-GCM ciphertext (see tools/encrypt-deck.mjs).
+    // The password is stretched into the key in the browser, and the key
+    // is kept in sessionStorage so a deck stays unlocked for the visit.
+    //
+    // Read mode: once someone starts paging through, the top bar fades
+    // away. A quick jiggle of the cursor, or moving it up to the top of
+    // the screen, brings it back until the pointer settles again.
+    (function () {
+      var deck = document.getElementById('deck');
+      document.documentElement.appendChild(deck);
+
+      var $ = function (sel) { return deck.querySelector(sel); };
+      var bar = $('.deck-bar'), titleEl = $('.deck-title'), backBtn = $('.deck-back');
+      var lock = $('.deck-lock'), input = $('.deck-password');
+      var unlockBtn = $('.deck-unlock'), errorEl = $('.deck-error');
+      var stage = $('.deck-stage'), frame = $('.deck-frame');
+      var imgs = deck.querySelectorAll('.deck-slide'), front = 0; // two layers to crossfade between
+      var controls = $('.deck-controls'), progress = $('.deck-progress'), progressFill = $('.deck-progress-fill');
+      var prevBtn = $('.deck-prev'), nextBtn = $('.deck-next');
+
+      var current = null;   // { slug, manifest, key, index, slides: {i: Promise<url>} }
+      var opening = null;   // slug being loaded, so repeat hashchanges don't double-open
+      var openedByLink = false;
+      var returnFocus = null;
+
+      function parseHash() {
+        var m = location.hash.match(/^#deck=([\w-]+)(?:&slide=(\d+))?$/);
+        return m ? { slug: m[1], slide: m[2] ? +m[2] - 1 : 0 } : null;
+      }
+
+      function fromBase64(s) {
+        return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); });
+      }
+      function toBase64(buf) {
+        return btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+      }
+
+      function deriveKey(manifest, password) {
+        var kdf = manifest.kdf;
+        return crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'])
+          .then(function (base) {
+            return crypto.subtle.deriveKey(
+              { name: 'PBKDF2', hash: kdf.hash, salt: fromBase64(kdf.salt), iterations: kdf.iterations },
+              base, { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
+          });
+      }
+
+      function storageGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+      function storageSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+
+      // Fetches (and decrypts) one slide into an object URL, cached per deck
+      function loadSlide(state, i) {
+        if (!state.slides[i]) {
+          var m = state.manifest;
+          var file = 'assets/decks/' + state.slug + '/' + String(i + 1).padStart(2, '0') + '.' + m.ext;
+          state.slides[i] = fetch(file)
+            .then(function (r) {
+              if (!r.ok) throw new Error('Missing slide ' + file);
+              return r.arrayBuffer();
+            })
+            .then(function (buf) {
+              if (!m.kdf) return buf;
+              return crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: new Uint8Array(buf, 0, 12) }, state.key, new Uint8Array(buf, 12));
+            })
+            .then(function (data) {
+              return URL.createObjectURL(new Blob([data], { type: 'image/webp' }));
+            });
+          // A failed load (e.g. a wrong key) shouldn't poison the cache
+          state.slides[i].catch(function () { delete state.slides[i]; });
+        }
+        return state.slides[i];
+      }
+
+      function show(i) {
+        var state = current;
+        i = Math.max(0, Math.min(state.manifest.count - 1, i));
+        state.index = i;
+        var n = state.manifest.count;
+        progressFill.style.width = ((i + 1) / n * 100) + '%';
+        progress.setAttribute('aria-valuemax', n);
+        progress.setAttribute('aria-valuenow', i + 1);
+        progress.setAttribute('aria-valuetext', 'Slide ' + (i + 1) + ' of ' + n);
+        prevBtn.disabled = i === 0;
+        nextBtn.disabled = i === state.manifest.count - 1;
+        history.replaceState(null, '', '#deck=' + state.slug + (i ? '&slide=' + (i + 1) : ''));
+        loadSlide(state, i).then(function (url) {
+          if (current !== state || state.index !== i) return; // navigated on meanwhile
+          present(url, state.manifest.title + ', slide ' + (i + 1) + ' of ' + state.manifest.count, function () {
+            return current === state && state.index === i;
+          });
+        });
+        // Warm up the neighbours so arrowing through feels instant
+        if (i + 1 < state.manifest.count) loadSlide(state, i + 1);
+        if (i > 0) loadSlide(state, i - 1);
+      }
+
+      // Crossfades to a slide: the new one is decoded on the back layer,
+      // raised above the old one, and faded in over it. The frame itself
+      // only fades on the first slide, so paging never blinks to empty.
+      function present(url, alt, stillWanted) {
+        var next = imgs[1 - front], prev = imgs[front];
+        next.classList.remove('is-shown'); // instant: the fade only runs on the way in
+        next.src = url;
+        next.decode().catch(function () {}).then(function () {
+          if (!stillWanted()) return;
+          prev.style.zIndex = 1;
+          next.style.zIndex = 2;
+          next.alt = alt;
+          prev.alt = '';
+          void next.offsetWidth;
+          next.classList.add('is-shown');
+          frame.classList.add('is-shown');
+          front = 1 - front;
+        });
+      }
+
+      function resetSlides() {
+        frame.classList.remove('is-shown');
+        imgs.forEach(function (el) {
+          el.classList.remove('is-shown');
+          el.removeAttribute('src');
+          el.alt = '';
+        });
+      }
+
+      // Paging by the reader (as opposed to opening on a slide)
+      function go(i) {
+        if (!current) return;
+        show(i);
+        current.reading = true;
+        sleep();
+      }
+
+      function startViewing(state, slide) {
+        current = state;
+        lock.hidden = true;
+        stage.hidden = controls.hidden = false;
+        show(slide);
+        nextBtn.focus();
+      }
+
+      function open(slug, slide) {
+        opening = slug;
+        fetch('assets/decks/' + slug + '/deck.json')
+          .then(function (r) {
+            if (!r.ok) throw new Error('No deck ' + slug);
+            return r.json();
+          })
+          .then(function (manifest) {
+            if (opening !== slug) return;
+            opening = null;
+            var state = { slug: slug, manifest: manifest, key: null, index: 0, slides: {} };
+            current = state;
+
+            returnFocus = document.activeElement;
+            titleEl.textContent = manifest.title;
+            resetSlides();
+            deck.classList.remove('is-reading');
+            clearTimeout(deck.hideTimer);
+            deck.hidden = false;
+            void deck.offsetWidth; // so the fade starts from transparent
+            deck.classList.add('is-open');
+            document.documentElement.classList.add('deck-open');
+
+            if (!manifest.kdf) return startViewing(state, slide);
+
+            var saved = storageGet('deck-key:' + slug);
+            var restore = saved
+              ? crypto.subtle.importKey('raw', fromBase64(saved), 'AES-GCM', true, ['decrypt'])
+              : Promise.reject();
+            restore
+              .then(function (key) {
+                state.key = key;
+                return loadSlide(state, 0); // proves the saved key still fits this deck
+              })
+              .then(function () { if (current === state) startViewing(state, slide); },
+                    function () { if (current === state) showLock(slide); });
+          })
+          .catch(function () {
+            opening = null;
+            clearHash();
+          });
+      }
+
+      function showLock(slide) {
+        lock.hidden = false;
+        stage.hidden = controls.hidden = true;
+        lock.dataset.slide = slide;
+        errorEl.textContent = '';
+        input.value = '';
+        input.focus();
+      }
+
+      lock.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var state = current;
+        if (!input.value) return;
+        unlockBtn.disabled = true;
+        unlockBtn.textContent = 'Unlocking…';
+        errorEl.textContent = '';
+        deriveKey(state.manifest, input.value)
+          .then(function (key) {
+            state.key = key;
+            return loadSlide(state, 0).then(function () { return crypto.subtle.exportKey('raw', key); });
+          })
+          .then(function (raw) {
+            storageSet('deck-key:' + state.slug, toBase64(raw));
+            if (current === state) startViewing(state, +lock.dataset.slide || 0);
+          }, function () {
+            state.key = null;
+            errorEl.textContent = 'That password didn’t work.';
+            input.select();
+          })
+          .then(function () {
+            unlockBtn.disabled = false;
+            unlockBtn.textContent = 'Unlock';
+          });
+      });
+
+      function teardown() {
+        if (!current && !opening) return;
+        var state = current;
+        current = opening = null;
+        clearTimeout(wakeTimer);
+        // Fade out, then take it out of the page — unless a deck was
+        // reopened in the meantime
+        deck.classList.remove('is-open');
+        clearTimeout(deck.hideTimer);
+        deck.hideTimer = setTimeout(function () {
+          if (deck.classList.contains('is-open')) return;
+          deck.hidden = true;
+          resetSlides();
+        }, 400);
+        document.documentElement.classList.remove('deck-open');
+        if (state) {
+          Object.keys(state.slides).forEach(function (i) {
+            state.slides[i].then(URL.revokeObjectURL, function () {});
+          });
+        }
+        if (returnFocus && returnFocus.focus) returnFocus.focus();
+      }
+
+      function clearHash() {
+        history.replaceState(null, '', location.pathname + location.search);
+        teardown();
+      }
+
+      // Opened from a link on this page → step back through history, so
+      // Back afterwards doesn't reopen it. Opened from a shared URL → just
+      // strip the hash.
+      function close() {
+        if (openedByLink) { openedByLink = false; history.back(); }
+        else clearHash();
+      }
+
+      function route() {
+        var target = parseHash();
+        if (!target) return teardown();
+        if (current && current.slug === target.slug) return;
+        if (current) teardown();
+        open(target.slug, target.slide);
+      }
+
+      document.querySelectorAll('.deck-link').forEach(function (link) {
+        link.addEventListener('click', function () { openedByLink = true; });
+      });
+
+      // A project with a deck is clickable anywhere, not just on its title
+      // link (which stays as the keyboard and screen-reader route in)
+      document.querySelectorAll('[data-deck]').forEach(function (section) {
+        var link = section.querySelector('.deck-link');
+        section.addEventListener('click', function (e) {
+          if (!e.target.closest('a')) link.click();
+        });
+      });
+      window.addEventListener('hashchange', route);
+      route();
+
+      backBtn.addEventListener('click', close);
+      prevBtn.addEventListener('click', function () { go(current.index - 1); });
+      nextBtn.addEventListener('click', function () { go(current.index + 1); });
+
+      // Clicking the slide pages through it: left third back, rest forward
+      var swiped = false;
+      frame.addEventListener('click', function (e) {
+        if (swiped) { swiped = false; return; }
+        var box = frame.getBoundingClientRect();
+        go(current.index + (e.clientX - box.left < box.width / 3 ? -1 : 1));
+      });
+
+      // Touch swipes
+      var startX = null, startY = null;
+      stage.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'mouse') return;
+        startX = e.clientX; startY = e.clientY;
+      });
+      stage.addEventListener('pointerup', function (e) {
+        if (startX === null) return;
+        var dx = e.clientX - startX, dy = e.clientY - startY;
+        startX = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          swiped = true;
+          go(current.index + (dx < 0 ? 1 : -1));
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (!deck.classList.contains('is-open')) return;
+        if (e.key === 'Escape') { e.preventDefault(); return close(); }
+        if (e.key === 'Tab') return trapFocus(e);
+        if (!current || !current.key && current.manifest.kdf || e.target === input) return;
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+          e.preventDefault(); go(current.index + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault(); go(current.index - 1);
+        } else if (e.key === 'Home') {
+          e.preventDefault(); go(0);
+        } else if (e.key === 'End') {
+          e.preventDefault(); go(current.manifest.count - 1);
+        }
+      });
+
+      // ---- Read mode ----
+      var WAKE_FOR = 2000;    // ms the bar stays up after the pointer settles
+      var TOP_ZONE = 120;     // px from the top that always shows the bar
+      var JIGGLE = 150;       // px of pointer travel within…
+      var JIGGLE_WINDOW = 300; // …this many ms counts as a jiggle
+      var wakeTimer = null, pointerAtTop = false, trail = [];
+
+      function sleep() {
+        clearTimeout(wakeTimer);
+        if (!current || !current.reading) return;
+        if (pointerAtTop || bar.contains(document.activeElement)) {
+          wakeTimer = setTimeout(sleep, WAKE_FOR);
+          return;
+        }
+        deck.classList.add('is-reading');
+      }
+
+      function wake() {
+        deck.classList.remove('is-reading');
+        clearTimeout(wakeTimer);
+        wakeTimer = setTimeout(sleep, WAKE_FOR);
+      }
+
+      deck.addEventListener('mousemove', function (e) {
+        if (!current || !current.reading) return;
+        pointerAtTop = e.clientY < TOP_ZONE;
+        trail.push({ x: e.clientX, y: e.clientY, t: e.timeStamp });
+        while (trail.length && e.timeStamp - trail[0].t > JIGGLE_WINDOW) trail.shift();
+        var travel = 0;
+        for (var k = 1; k < trail.length; k++) {
+          travel += Math.hypot(trail[k].x - trail[k - 1].x, trail[k].y - trail[k - 1].y);
+        }
+        if (pointerAtTop || travel > JIGGLE) {
+          trail = [];
+          wake();
+        }
+      });
+
+      deck.addEventListener('mouseleave', function () { pointerAtTop = false; });
+
+      // No cursor on touch screens: a tap anywhere off the slide wakes it
+      deck.addEventListener('pointerdown', function (e) {
+        if (e.pointerType !== 'mouse' && current && current.reading && !frame.contains(e.target)) wake();
+      });
+
+      // Tabbing onto the back button brings the bar up with it
+      bar.addEventListener('focusin', function () { if (current && current.reading) wake(); });
+
+      // Keep Tab cycling within the open dialog
+      function trapFocus(e) {
+        var items = Array.prototype.filter.call(
+          deck.querySelectorAll('button, input'),
+          function (el) { return !el.disabled && el.offsetParent !== null; });
+        if (!items.length) return;
+        var first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     })();
   </script>
 

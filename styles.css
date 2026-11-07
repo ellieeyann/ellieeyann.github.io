@@ -37,7 +37,7 @@
    cursor is untouched. */
 
 @media (hover: hover) and (pointer: fine) {
-  .custom-cursor, .custom-cursor * { cursor: none !important; }
+  .custom-cursor, .custom-cursor * { cursor: none; }
 }
 
 /* The dot is appended to <html>, outside the zoomed <body>, so
@@ -287,6 +287,302 @@ body {
   transform: scaleX(-1);
 }
 
+/* A project with a deck opens it from anywhere in its band. Its title
+   is the actual link (for keyboards and screen readers), styled as
+   plain text. */
+[data-deck] { cursor: pointer; }
+
+.deck-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Hovering a deck project's graphic swells it slightly. Uses the
+   standalone `scale` property so it stacks on the reveal's transform
+   without fighting it, and skips the reveal's entrance delay. */
+[data-deck] .project-graphic {
+  transform-origin: 50% 40%;
+  transition: opacity 0.55s ease-out,
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              scale 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: 0.12s, 0.12s, 0s;
+}
+
+@media (hover: hover) {
+  [data-deck].on-screen .project-graphic:hover { scale: 1.03; }
+}
+
+/* "As seen on" + the TikTok glyph, under the Avatars description */
+.tiktok-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  color: inherit;
+  font-size: 20px; /* matches the intro links */
+  font-weight: 150;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  transition: color 0.2s ease;
+}
+
+.tiktok-logo svg {
+  display: block;
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.tiktok-logo { transition: opacity 0.2s ease; }
+
+.tiktok-link:hover { color: #8A8A8A; }
+.tiktok-link:hover .tiktok-logo { opacity: 0.7; }
+
+/* ---------------- Deck viewer ---------------- */
+
+/* Lives on <html>, outside the zoomed body, so it's sized in real
+   viewport pixels. Sits just under the cursor dot. */
+.deck {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-band);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Fades in on open (and back out on close, before it's hidden) */
+.deck.is-open { opacity: 1; }
+.deck:not(.is-open) { pointer-events: none; }
+
+.deck[hidden],
+.deck [hidden] { display: none !important; }
+
+/* The page behind stays put while a deck is open */
+html.deck-open { overflow: hidden; }
+
+/* Zero-specificity reset, so the button rules below override it */
+:where(.deck button) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.deck-bar,
+.deck-controls {
+  display: flex;
+  align-items: center;
+  padding: 24px 40px;
+}
+
+/* Just the back chevron, top left. In read mode
+   (.is-reading) the whole bar fades away; it keeps its space so the
+   slide doesn't shift when it comes back. */
+.deck-bar { transition: opacity 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+.deck.is-reading .deck-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.deck-back {
+  display: block;
+  margin-left: -8px; /* the glyph, not its hit area, sits on the gutter */
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.deck-back svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+.deck-back:hover { color: #8A8A8A; }
+
+/* The deck's title names the dialog for screen readers but isn't shown */
+.deck-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The slide is the largest 16:9 box that fits the stage */
+.deck-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px 26px; /* room for the progress bar under the slide */
+  container-type: size;
+}
+
+.deck-frame {
+  position: relative;
+  width: min(100cqw, 100cqh * 16 / 9);
+  aspect-ratio: 16 / 9;
+  background: #FFFFFF;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transform: scale(0.99);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The frame settles in once, with the first slide */
+.deck-frame.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+/* Slides are two stacked layers. The incoming one fades in over the
+   outgoing one; its transition only lives on the shown state, so a
+   layer drops out instantly when it's reused underneath. */
+.deck-slide {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.deck-slide.is-shown {
+  opacity: 1;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Progress bar: hangs just below the slide at exactly its width */
+.deck-progress {
+  position: absolute;
+  top: calc(100% + 24px);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #E4E4E4;
+  pointer-events: none;
+}
+
+.deck-progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--text-primary);
+  transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.deck-controls {
+  justify-content: center;
+  gap: 40px;
+}
+
+.deck-prev,
+.deck-next {
+  display: block;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.deck-prev svg,
+.deck-next svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+.deck-prev:hover,
+.deck-next:hover { color: #8A8A8A; }
+.deck-prev:disabled,
+.deck-next:disabled { color: #C8C8C8; cursor: default; }
+
+/* Password gate */
+.deck-lock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px 15vh;
+  text-align: center;
+}
+
+.deck-lock p {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 150;
+}
+
+.deck-lock-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.deck-password {
+  width: 260px;
+  padding: 6px 0;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 150;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--text-primary);
+  border-radius: 0;
+  outline: none;
+}
+
+.deck-password::placeholder { color: #A8A8A8; }
+
+.deck-unlock {
+  font-size: 20px;
+  font-weight: 150;
+  padding: 6px 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-position: from-font;
+}
+
+.deck-unlock:hover { color: #8A8A8A; }
+.deck-unlock:disabled { color: #8A8A8A; cursor: default; }
+
+.deck .deck-error {
+  min-height: 1.3em;
+  margin: 16px 0 0;
+  font-size: 16px;
+  color: #B3261E;
+}
+
+.deck :focus-visible {
+  outline: 1px solid var(--text-primary);
+  outline-offset: 4px;
+}
+
+@media (max-width: 900px) {
+  .deck-bar,
+  .deck-controls { padding: 20px 24px; }
+  .deck-stage { padding: 0 16px 26px; }
+  .deck-lock { padding: 0 24px 15vh; }
+  .deck-lock p { font-size: 18px; }
+  .deck-lock-row { flex-direction: column; align-items: stretch; width: 100%; max-width: 320px; }
+  .deck-password { width: 100%; font-size: 16px; } /* 16px stops iOS zooming on focus */
+  .tiktok-link { margin-top: 14px; font-size: 16px; }
+}
+
 /* ---------------- Footer ---------------- */
 
 .footer {
@@ -462,4 +758,10 @@ body {
     transition: none;
   }
   .project .g-oculus { transform: scaleX(-1); }
+  .deck,
+  .deck-bar,
+  .deck-frame,
+  .deck-slide.is-shown,
+  .deck-progress-fill,
+  [data-deck] .project-graphic { transition: none; }
 }
