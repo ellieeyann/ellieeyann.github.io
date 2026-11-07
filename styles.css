@@ -607,7 +607,27 @@ html.deck-open { overflow: hidden; }
 /* The dialog takes focus on open (so keys work); it needs no ring, and
    neither does the password field — its underline and caret are enough */
 .deck:focus,
-.deck .deck-password:focus-visible { outline: none; }
+.deck:focus-visible,
+.deck .deck-password:focus,
+.deck .deck-password:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Browsers dress the field up on their own: Safari's native field
+   chrome, and the tinted box Chrome/Safari paint over a saved
+   password. Paint the background back over it and keep the text black. */
+.deck-password {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.deck-password:-webkit-autofill,
+.deck-password:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 100px var(--bg-band) inset;
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--text-primary);
+}
 
 /* Soft fade-ins: the password screen, and the slides with their controls,
    drift up a few pixels as they appear (see fadeIn/fadeOut in index.html) */
