@@ -548,17 +548,49 @@ html.deck-open { overflow: hidden; }
 
 .deck-password::placeholder { color: #A8A8A8; }
 
+/* Lock icon as the submit button. While the key is derived it breathes;
+   on the right password the shackle swings open about its left leg. */
 .deck-unlock {
-  font-size: 20px;
-  font-weight: 150;
-  padding: 6px 0;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-position: from-font;
+  display: block;
+  padding: 2px;
+  transition: color 0.2s ease;
+}
+
+.deck-unlock svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+  overflow: visible;
+}
+
+.lock-body { fill: var(--bg-band); }
+
+/* Like a real padlock: the shackle lifts clear, then swings around its
+   left (long) leg so the wire ends up out to the left of the body.
+   scaleX(1 → -1) about the left leg reads as that turn in 2D. */
+.lock-shackle {
+  transform-box: view-box;
+  transform-origin: 8.5px 15px; /* foot of the left leg */
+}
+
+.deck-unlock.is-unlocked .lock-shackle {
+  animation: shackle-open 0.75s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+@keyframes shackle-open {
+  0%   { transform: none; }
+  35%  { transform: translateY(-3.5px); }
+  100% { transform: translateY(-3.5px) scaleX(-1); }
 }
 
 .deck-unlock:hover { color: #8A8A8A; }
-.deck-unlock:disabled { color: #8A8A8A; cursor: default; }
+.deck-unlock:disabled { cursor: default; }
+.deck-unlock.is-busy { animation: lock-breathe 1.2s ease-in-out infinite; }
+.deck-unlock.is-unlocked { color: var(--text-primary); }
+
+@keyframes lock-breathe {
+  50% { opacity: 0.35; }
+}
 
 .deck .deck-error {
   min-height: 1.3em;
@@ -572,14 +604,39 @@ html.deck-open { overflow: hidden; }
   outline-offset: 4px;
 }
 
+/* The dialog takes focus on open (so keys work); it needs no ring, and
+   neither does the password field — its underline and caret are enough */
+.deck:focus,
+.deck .deck-password:focus-visible { outline: none; }
+
+/* Soft fade-ins: the password screen, and the slides with their controls,
+   drift up a few pixels as they appear (see fadeIn/fadeOut in index.html) */
+.deck-lock,
+.deck-stage,
+.deck-controls {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.deck-lock.is-visible,
+.deck-stage.is-visible,
+.deck-controls.is-visible {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s,
+              transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+
 @media (max-width: 900px) {
   .deck-bar,
   .deck-controls { padding: 20px 24px; }
   .deck-stage { padding: 0 16px 26px; }
   .deck-lock { padding: 0 24px 15vh; }
   .deck-lock p { font-size: 18px; }
-  .deck-lock-row { flex-direction: column; align-items: stretch; width: 100%; max-width: 320px; }
-  .deck-password { width: 100%; font-size: 16px; } /* 16px stops iOS zooming on focus */
+  .deck-lock-row { width: 100%; max-width: 320px; }
+  .deck-password { flex: 1; width: auto; min-width: 0; font-size: 16px; } /* 16px stops iOS zooming on focus */
   .tiktok-link { margin-top: 14px; font-size: 16px; }
 }
 
@@ -761,7 +818,15 @@ html.deck-open { overflow: hidden; }
   .deck,
   .deck-bar,
   .deck-frame,
+  .deck-lock,
+  .deck-stage,
+  .deck-controls,
   .deck-slide.is-shown,
   .deck-progress-fill,
+  .deck-lock.is-visible,
+  .deck-stage.is-visible,
+  .deck-controls.is-visible,
   [data-deck] .project-graphic { transition: none; }
+  .deck-unlock.is-busy { animation: none; }
+  .deck-unlock.is-unlocked .lock-shackle { animation: none; transform: translateY(-3.5px) scaleX(-1); }
 }

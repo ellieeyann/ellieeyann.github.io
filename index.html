@@ -111,7 +111,7 @@
 
   <!-- ================= Deck viewer ================= -->
   <!-- Opened by #deck=<slug> links; slides live in assets/decks/<slug>/ -->
-  <div class="deck" id="deck" role="dialog" aria-modal="true" aria-labelledby="deck-title" hidden>
+  <div class="deck" id="deck" role="dialog" aria-modal="true" aria-labelledby="deck-title" tabindex="-1" hidden>
     <header class="deck-bar">
       <button class="deck-back" type="button" aria-label="Back">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
@@ -123,7 +123,14 @@
       <div class="deck-lock-row">
         <input class="deck-password" type="password" autocomplete="current-password"
                aria-label="Password" placeholder="Password">
-        <button class="deck-unlock" type="submit">Unlock</button>
+        <button class="deck-unlock" type="submit" aria-label="Unlock">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <!-- Legs run down behind the body (which is filled to hide them),
+                 so the shackle can lift without detaching -->
+            <path class="lock-shackle" d="M8.5 15V7.5a3.5 3.5 0 0 1 7 0V15" fill="none" stroke="currentColor" stroke-width="1.3"/>
+            <rect class="lock-body" x="5.5" y="11" width="13" height="9.5" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </button>
       </div>
       <p class="deck-error" role="alert"></p>
     </form>
@@ -363,12 +370,38 @@
         sleep();
       }
 
+      // Soft fades between the viewer's screens (password → slides).
+      // fadeIn un-hides and lets the .is-visible transition run;
+      // fadeOut runs it in reverse, then hides.
+      var FADE_MS = 500;
+      function fadeIn(el) {
+        el.hidden = false;
+        el.classList.remove('is-visible');
+        void el.offsetWidth;
+        el.classList.add('is-visible');
+      }
+      function fadeOut(el, then) {
+        el.classList.remove('is-visible');
+        setTimeout(function () {
+          if (el.classList.contains('is-visible')) return; // faded back in meanwhile
+          el.hidden = true;
+          if (then) then();
+        }, FADE_MS);
+      }
+
       function startViewing(state, slide) {
         current = state;
-        lock.hidden = true;
-        stage.hidden = controls.hidden = false;
-        show(slide);
-        nextBtn.focus();
+        function reveal() {
+          if (current !== state) return;
+          fadeIn(stage);
+          fadeIn(controls);
+          show(slide);
+          // Focus the dialog itself rather than a control, so arrow keys
+          // work straight away without a focus ring appearing on a button
+          deck.focus();
+        }
+        if (lock.hidden) reveal();
+        else fadeOut(lock, reveal);
       }
 
       function open(slug, slide) {
@@ -387,6 +420,10 @@
             returnFocus = document.activeElement;
             titleEl.textContent = manifest.title;
             resetSlides();
+            [lock, stage, controls].forEach(function (el) {
+              el.hidden = true;
+              el.classList.remove('is-visible');
+            });
             deck.classList.remove('is-reading');
             clearTimeout(deck.hideTimer);
             deck.hidden = false;
@@ -415,11 +452,12 @@
       }
 
       function showLock(slide) {
-        lock.hidden = false;
-        stage.hidden = controls.hidden = true;
         lock.dataset.slide = slide;
         errorEl.textContent = '';
         input.value = '';
+        unlockBtn.disabled = false;
+        unlockBtn.classList.remove('is-busy', 'is-unlocked');
+        fadeIn(lock);
         input.focus();
       }
 
@@ -428,7 +466,7 @@
         var state = current;
         if (!input.value) return;
         unlockBtn.disabled = true;
-        unlockBtn.textContent = 'Unlocking…';
+        unlockBtn.classList.add('is-busy'); // the lock breathes while the key is derived
         errorEl.textContent = '';
         deriveKey(state.manifest, input.value)
           .then(function (key) {
@@ -437,15 +475,18 @@
           })
           .then(function (raw) {
             storageSet('deck-key:' + state.slug, toBase64(raw));
-            if (current === state) startViewing(state, +lock.dataset.slide || 0);
+            // The shackle swings open, holds a beat, then the deck fades in
+            unlockBtn.classList.remove('is-busy');
+            unlockBtn.classList.add('is-unlocked');
+            setTimeout(function () {
+              if (current === state) startViewing(state, +lock.dataset.slide || 0);
+            }, 1000);
           }, function () {
             state.key = null;
+            unlockBtn.disabled = false;
+            unlockBtn.classList.remove('is-busy');
             errorEl.textContent = 'That password didn’t work.';
             input.select();
-          })
-          .then(function () {
-            unlockBtn.disabled = false;
-            unlockBtn.textContent = 'Unlock';
           });
       });
 
